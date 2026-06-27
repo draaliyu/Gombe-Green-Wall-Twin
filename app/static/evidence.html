@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Evidence & Methodology | Northern Gombe Twin</title>
+  <meta name="description" content="Data provenance, methodology, assumptions and limitations for the Northern Gombe Desertification and Afforestation Digital Twin.">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/css/styles.css?v=1.0.0">
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Transparency Service</span><h1>Evidence & Methodology</h1></span></a>
+  <nav class="nav" aria-label="Primary services">
+    <a href="/" data-nav="twin">Live Twin</a><a href="/satellite" data-nav="satellite">Satellite NDVI</a><a href="/simulation" data-nav="simulation">Simulation Lab</a><a href="/planner" data-nav="planner">Green Wall Planner</a><a href="/evidence" data-nav="evidence">Evidence</a>
+  </nav>
+  <div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span></div>
+</header>
+<main class="page">
+  <section class="hero-copy">
+    <div><span class="eyebrow">Observed • contextual • simulated</span><h2>Every visual layer should say what it knows—and what it does not.</h2><p>This service separates satellite observations, forest-change context, scenario assumptions and interpretation limits so that the twin remains useful without presenting model output as measured reality.</p></div>
+    <span class="live-time" id="evidence-last-updated">Waiting for sources…</span>
+  </section>
+
+  <section class="data-grid">
+    <article class="card">
+      <h3>Sentinel-2 source status</h3>
+      <div class="card-content">
+        <span class="badge" id="evidence-sentinel-mode">—</span>
+        <div class="kpi-grid" style="margin-top:12px">
+          <div class="kpi"><small>Mean NDVI</small><strong id="evidence-ndvi">—</strong><em>Valid pixels</em></div>
+          <div class="kpi"><small>Coverage</small><strong id="evidence-coverage">—</strong><em>After mask</em></div>
+        </div>
+        <p id="evidence-sentinel-note">Loading…</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Global Forest Watch status</h3>
+      <div class="card-content">
+        <span class="badge" id="evidence-gfw-mode">—</span>
+        <div class="kpi-grid" style="margin-top:12px">
+          <div class="kpi"><small>Recent series</small><strong id="evidence-gfw-loss">—</strong><em>hectares</em></div>
+          <div class="kpi"><small>Latest year</small><strong id="evidence-gfw-latest">—</strong><em>hectares</em></div>
+        </div>
+        <p id="evidence-gfw-note">Loading…</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Scenario status</h3>
+      <div class="card-content">
+        <span class="badge">Cellular automaton</span>
+        <div class="kpi-grid" style="margin-top:12px">
+          <div class="kpi"><small>Tick</small><strong id="evidence-tick">—</strong><em>Model step</em></div>
+          <div class="kpi"><small>Barrier</small><strong id="evidence-barrier">—</strong><em>Cell fraction</em></div>
+        </div>
+        <p>Scenario outputs are calculated from explicit parameters and NDVI assimilation. They are not field observations or certified forecasts.</p>
+      </div>
+    </article>
+
+    <article class="card wide">
+      <h3>Current evidence statements</h3>
+      <div class="card-content"><div class="insight-list" id="evidence-insights"></div></div>
+    </article>
+
+    <article class="card">
+      <h3>NDVI methodology</h3>
+      <div class="card-content"><div id="ndvi-methodology"><p>Loading methodology…</p></div></div>
+    </article>
+
+    <article class="card full">
+      <h3>Model and data dictionary</h3>
+      <div class="card-content">
+        <table class="table">
+          <thead><tr><th>Layer</th><th>Type</th><th>Primary evidence</th><th>Appropriate interpretation</th><th>Main limitation</th></tr></thead>
+          <tbody>
+            <tr><td>NDVI texture</td><td>Observation-derived</td><td>Sentinel-2 B04/B08</td><td>Relative spectral greenness.</td><td>Clouds, seasonality and bare bright soils can affect interpretation.</td></tr>
+            <tr><td>Tree-cover loss series</td><td>Contextual dataset</td><td>GFW / UMD tree-cover loss</td><td>Historical mapped tree-cover disturbance.</td><td>Does not identify cause or prove desertification.</td></tr>
+            <tr><td>Desert pressure</td><td>Simulation</td><td>NDVI assimilation + user scenario</td><td>Comparison of alternative assumptions.</td><td>Requires local calibration and validation.</td></tr>
+            <tr><td>3D trees</td><td>Simulation visual</td><td>Barrier and vegetation state</td><td>Modelled growth/withering response.</td><td>Not a count or inventory of real trees.</td></tr>
+            <tr><td>Green Wall corridor</td><td>User intervention</td><td>Map-drawn line</td><td>Exploratory barrier placement.</td><td>Ignores tenure, cost, water, species and access unless added separately.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+</main>
+<footer class="footer">This research demonstrator supports exploration and communication. It should not be the sole basis for land management, environmental regulation, investment or community decisions.</footer>
+<script type="module" src="/static/js/evidence.js?v=1.0.0"></script>
+</body>
+</html>

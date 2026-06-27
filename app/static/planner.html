@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Great Green Wall Planner | Northern Gombe Twin</title>
+  <meta name="description" content="Interactive Great Green Wall corridor planner for northern Gombe State with immediate cellular-automata feedback.">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=1.0.0">
+  <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Intervention Design Service</span><h1>Great Green Wall Planner</h1></span></a>
+  <nav class="nav" aria-label="Primary services">
+    <a href="/" data-nav="twin">Live Twin</a><a href="/satellite" data-nav="satellite">Satellite NDVI</a><a href="/simulation" data-nav="simulation">Simulation Lab</a><a href="/planner" data-nav="planner">Green Wall Planner</a><a href="/evidence" data-nav="evidence">Evidence</a>
+  </nav>
+  <div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span></div>
+</header>
+<main class="page">
+  <section class="hero-copy">
+    <div><span class="eyebrow">Click-to-design simulation corridors</span><h2>Sketch a tree barrier and see the model respond.</h2><p>Each point you add is converted into simulated barrier cells. This is an exploratory planning tool—not a land allocation, engineering design or planting prescription.</p></div>
+    <span class="live-time" id="planner-last-updated">Waiting for live state…</span>
+  </section>
+
+  <section class="data-grid">
+    <article class="card wide">
+      <h3>Intervention map</h3>
+      <div class="card-content">
+        <div class="service-map" id="planner-map-shell">
+          <div class="map" id="planner-map"></div>
+          <div class="planner-instructions"><h3>Draw a corridor</h3><p>Tap or click at least two points inside the northern Gombe analysis area. Drag the map with two fingers on mobile. Submit when the line matches your scenario.</p></div>
+          <div class="map-controls">
+            <button class="control-btn active" id="planner-draw"><span class="icon">✚</span>Draw</button>
+            <button class="control-btn" id="planner-undo"><span class="icon">↶</span>Undo</button>
+            <button class="control-btn" id="planner-clear"><span class="icon">×</span>Clear line</button>
+            <button class="control-btn" id="planner-reset-view"><span class="icon">⌂</span>Reset</button>
+            <button class="control-btn" id="planner-fullscreen"><span class="icon">⛶</span>Full</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Planting scenario</h3>
+      <div class="card-content">
+        <div class="kpi-grid">
+          <div class="kpi"><small>Path points</small><strong id="planner-point-count">0</strong><em>Selected vertices</em></div>
+          <div class="kpi"><small>Approx. length</small><strong id="planner-length">0 km</strong><em>Geodesic estimate</em></div>
+          <div class="kpi"><small>Barrier cells</small><strong id="planner-cells">—</strong><em>After submission</em></div>
+          <div class="kpi"><small>Model tree health</small><strong id="planner-health">—</strong><em>Current scenario</em></div>
+        </div>
+        <div class="slider-row" style="margin-top:16px"><label for="corridor-width">Corridor width</label><input id="corridor-width" type="range" min="1" max="6" value="2" step="1"><output id="corridor-width-value">2 cells</output></div>
+        <div class="btn-row" style="margin-top:16px"><button class="btn" id="submit-corridor">Plant in simulation</button><button class="btn danger" id="remove-all-corridors">Remove all barriers</button></div>
+        <p id="planner-message">No simulated corridor submitted yet.</p>
+      </div>
+    </article>
+
+    <article class="card full">
+      <h3>Planning interpretation</h3>
+      <div class="card-content">
+        <div class="kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+          <div class="kpi"><small>Current desert fraction</small><strong id="planner-desert">—</strong><em>Scenario state</em></div>
+          <div class="kpi"><small>Vegetated fraction</small><strong id="planner-vegetated">—</strong><em>Scenario state</em></div>
+          <div class="kpi"><small>Barrier footprint</small><strong id="planner-barrier">—</strong><em>Scenario state</em></div>
+          <div class="kpi"><small>Restoration gain</small><strong id="planner-gain">—</strong><em>Relative to reset</em></div>
+        </div>
+        <p>Barrier performance depends on maintenance, rainfall support, aridity and grazing assumptions. A visually successful model corridor should still be checked against land tenure, water availability, species suitability, access, survival rates and community priorities.</p>
+      </div>
+    </article>
+  </section>
+</main>
+<footer class="footer">The planner modifies only the digital scenario. It does not identify available land, legal rights, suitable species or implementation cost.</footer>
+<script type="module" src="/static/js/planner.js?v=1.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+fastapi==0.115.14
+uvicorn[standard]==0.34.3
+httpx==0.28.1
+pydantic-settings==2.10.1
+python-dotenv==1.1.1
+numpy==2.2.6
+Pillow==11.2.1
+tifffile==2025.6.11
+pytest==8.4.1
+pytest-asyncio==1.0.0

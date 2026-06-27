@@ -1,0 +1,9 @@
+[project]
+name = "gombe-desertification-afforestation-twin"
+version = "1.0.0"
+description = "Sentinel-2 NDVI, Global Forest Watch and cellular-automata digital twin for northern Gombe."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

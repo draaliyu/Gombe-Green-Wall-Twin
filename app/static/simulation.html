@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cellular Automata Lab | Northern Gombe Twin</title>
+  <meta name="description" content="Interactive desertification and afforestation cellular-automata scenario lab for northern Gombe State.">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/css/styles.css?v=1.0.0">
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Scenario Service</span><h1>Cellular Automata Lab</h1></span></a>
+  <nav class="nav" aria-label="Primary services">
+    <a href="/" data-nav="twin">Live Twin</a><a href="/satellite" data-nav="satellite">Satellite NDVI</a><a href="/simulation" data-nav="simulation">Simulation Lab</a><a href="/planner" data-nav="planner">Green Wall Planner</a><a href="/evidence" data-nav="evidence">Evidence</a>
+  </nav>
+  <div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span></div>
+</header>
+<main class="page">
+  <section class="hero-copy">
+    <div><span class="eyebrow">Transparent scenario controls</span><h2>Stress the landscape, strengthen the barrier, compare the response.</h2><p>These controls are scenario assumptions, not live measurements. The model is initialised and periodically assimilated from NDVI, while the pressures below let you explore alternative futures.</p></div>
+    <span class="live-time" id="sim-last-updated">Waiting for live state…</span>
+  </section>
+
+  <section class="data-grid">
+    <article class="card wide">
+      <h3>Live cellular landscape</h3>
+      <div class="card-content">
+        <canvas id="simulation-canvas" class="canvas-stage" aria-label="Cellular automata landscape"></canvas>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn" id="sim-run-toggle">Pause</button>
+          <button class="btn" id="sim-step-faster">Increase speed</button>
+          <button class="btn warn" id="sim-reset">Reset from NDVI</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Current model metrics</h3>
+      <div class="card-content">
+        <div class="kpi-grid">
+          <div class="kpi"><small>Tick</small><strong id="lab-tick">—</strong><em>Model step</em></div>
+          <div class="kpi"><small>Speed</small><strong id="lab-speed">—</strong><em>Multiplier</em></div>
+          <div class="kpi"><small>Vegetated</small><strong id="lab-vegetated">—</strong><em>Cells &gt; threshold</em></div>
+          <div class="kpi"><small>High desert</small><strong id="lab-desert">—</strong><em>Cells &gt; threshold</em></div>
+          <div class="kpi"><small>Barrier</small><strong id="lab-barrier">—</strong><em>Planted footprint</em></div>
+          <div class="kpi"><small>Tree health</small><strong id="lab-health">—</strong><em>Barrier vegetation</em></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card full">
+      <h3>Scenario parameters</h3>
+      <div class="card-content">
+        <div class="slider-group">
+          <div class="slider-row"><label for="aridity-pressure">Aridity pressure</label><input id="aridity-pressure" data-parameter="aridity_pressure" type="range" min="0" max="1" step="0.01"><output id="aridity-pressure-value">—</output></div>
+          <div class="slider-row"><label for="grazing-pressure">Grazing pressure</label><input id="grazing-pressure" data-parameter="grazing_pressure" type="range" min="0" max="1" step="0.01"><output id="grazing-pressure-value">—</output></div>
+          <div class="slider-row"><label for="rainfall-support">Rainfall support</label><input id="rainfall-support" data-parameter="rainfall_support" type="range" min="0" max="1" step="0.01"><output id="rainfall-support-value">—</output></div>
+          <div class="slider-row"><label for="restoration-effort">Restoration effort</label><input id="restoration-effort" data-parameter="restoration_effort" type="range" min="0" max="1" step="0.01"><output id="restoration-effort-value">—</output></div>
+          <div class="slider-row"><label for="barrier-maintenance">Barrier maintenance</label><input id="barrier-maintenance" data-parameter="barrier_maintenance" type="range" min="0" max="1" step="0.01"><output id="barrier-maintenance-value">—</output></div>
+          <div class="slider-row"><label for="spread-rate">Desert spread rate</label><input id="spread-rate" data-parameter="spread_rate" type="range" min="0.001" max="0.25" step="0.001"><output id="spread-rate-value">—</output></div>
+          <div class="slider-row"><label for="growth-rate">Vegetation growth rate</label><input id="growth-rate" data-parameter="growth_rate" type="range" min="0.001" max="0.20" step="0.001"><output id="growth-rate-value">—</output></div>
+        </div>
+        <div class="btn-row" style="margin-top:16px"><button class="btn" id="apply-scenario">Apply scenario</button><span class="badge">Inputs are assumptions</span></div>
+      </div>
+    </article>
+
+    <article class="card full">
+      <h3>Trajectory history</h3>
+      <div class="card-content"><canvas class="chart-canvas" id="history-chart" aria-label="Vegetation and desertification history"></canvas></div>
+    </article>
+  </section>
+</main>
+<footer class="footer">A cellular automaton is a scenario model. The slider settings are explicit assumptions and must be calibrated with field observations, soils, rainfall, land management and restoration survival data before decision use.</footer>
+<script type="module" src="/static/js/simulation.js?v=1.0.0"></script>
+</body>
+</html>

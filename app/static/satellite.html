@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Satellite NDVI Observatory | Northern Gombe Twin</title>
+  <meta name="description" content="Sentinel-2 NDVI observatory for northern Gombe State with live vegetation statistics, cloud-masked coverage and spatial interpretation.">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=1.0.0">
+  <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Earth Observation Service</span><h1>Satellite NDVI Observatory</h1></span></a>
+  <nav class="nav" aria-label="Primary services">
+    <a href="/" data-nav="twin">Live Twin</a><a href="/satellite" data-nav="satellite">Satellite NDVI</a><a href="/simulation" data-nav="simulation">Simulation Lab</a><a href="/planner" data-nav="planner">Green Wall Planner</a><a href="/evidence" data-nav="evidence">Evidence</a>
+  </nav>
+  <div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span></div>
+</header>
+<main class="page">
+  <section class="hero-copy">
+    <div><span class="eyebrow">Sentinel-2 L2A • cloud-masked NDVI</span><h2>Read the vegetation signal before running the scenario.</h2><p>The satellite service calculates NDVI from red and near-infrared reflectance. It shows spectral greenness, not plant species, biomass, land ownership or the cause of degradation.</p></div>
+    <span class="live-time" id="sat-last-updated">Waiting for data…</span>
+  </section>
+
+  <section class="data-grid">
+    <article class="card wide">
+      <h3>Spatial NDVI texture</h3>
+      <div class="card-content">
+        <div class="service-map" id="satellite-map-shell">
+          <div class="map" id="satellite-map"></div>
+          <div class="map-title"><span class="eyebrow">Current vegetation mosaic</span><strong id="sat-map-title">Loading satellite layer…</strong><span id="sat-map-subtitle">Cloud-masked pixels and display thresholds</span></div>
+          <div class="map-controls">
+            <button class="control-btn active" id="sat-view-texture"><span class="icon">◉</span>Blend</button>
+            <button class="control-btn" id="sat-view-class"><span class="icon">▦</span>Classes</button>
+            <button class="control-btn" id="sat-reset"><span class="icon">⌂</span>Reset</button>
+            <button class="control-btn" id="sat-fullscreen"><span class="icon">⛶</span>Full</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Observation summary</h3>
+      <div class="card-content">
+        <div class="kpi-grid">
+          <div class="kpi"><small>Mean</small><strong id="sat-mean">—</strong><em>NDVI</em></div>
+          <div class="kpi"><small>Median</small><strong id="sat-median">—</strong><em>NDVI</em></div>
+          <div class="kpi"><small>P10</small><strong id="sat-p10">—</strong><em>Lower tail</em></div>
+          <div class="kpi"><small>P90</small><strong id="sat-p90">—</strong><em>Upper tail</em></div>
+        </div>
+        <div class="meter"><div class="meter-top"><span>Valid cloud-free coverage</span><b id="sat-valid-label">—</b></div><div class="meter-track"><div class="meter-fill" id="sat-valid-meter"></div></div></div>
+        <p id="sat-note">Loading source note…</p>
+        <span class="badge" id="sat-source-mode">—</span>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>NDVI class distribution</h3>
+      <div class="card-content"><canvas class="chart-canvas" id="ndvi-histogram" aria-label="NDVI histogram"></canvas></div>
+    </article>
+
+    <article class="card full">
+      <h3>How to interpret this view</h3>
+      <div class="card-content">
+        <table class="table">
+          <thead><tr><th>Display class</th><th>NDVI interval</th><th>What it can suggest</th><th>What it cannot prove</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge demo">Bare / very sparse</span></td><td>&lt; 0.15</td><td>Low spectral greenness in the selected mosaic.</td><td>Active desertification, soil fertility or land-use cause.</td></tr>
+            <tr><td><span class="badge">Sparse</span></td><td>0.15–0.30</td><td>Limited or discontinuous green vegetation.</td><td>Specific crop/tree condition without field data.</td></tr>
+            <tr><td><span class="badge">Moderate</span></td><td>0.30–0.50</td><td>Moderate photosynthetically active cover.</td><td>Forest density, biomass or restoration success.</td></tr>
+            <tr><td><span class="badge">Dense</span></td><td>≥ 0.50</td><td>Relatively strong greenness in valid pixels.</td><td>Tree species, planted status or permanent cover.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+</main>
+<footer class="footer">The class boundaries are visualisation thresholds for this demonstrator. Operational monitoring requires local calibration, repeat observations and field verification.</footer>
+<script type="module" src="/static/js/satellite.js?v=1.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Northern Gombe Desertification & Afforestation Twin</title>
+  <meta name="description" content="A live Sentinel-2 NDVI and Great Green Wall digital twin for northern Gombe State, with 3D terrain, growing tree barriers and cellular-automata scenario simulation.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Northern Gombe Desertification & Afforestation Twin">
+  <meta property="og:description" content="Explore live vegetation condition, desertification scenarios and simulated Great Green Wall interventions across northern Gombe State.">
+  <meta property="og:image" content="/static/social-preview.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=1.0.0">
+  <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="/">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span><span class="eyebrow">Great Green Wall Digital Twin</span><h1>Northern Gombe Desertification & Afforestation Twin</h1></span>
+  </a>
+  <nav class="nav" aria-label="Primary services">
+    <a href="/" data-nav="twin">Live Twin</a>
+    <a href="/satellite" data-nav="satellite">Satellite NDVI</a>
+    <a href="/simulation" data-nav="simulation">Simulation Lab</a>
+    <a href="/planner" data-nav="planner">Green Wall Planner</a>
+    <a href="/evidence" data-nav="evidence">Evidence</a>
+  </nav>
+  <div class="header-status">
+    <span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span>
+    <span class="status-pill">Frame <strong id="header-frame">000000</strong></span>
+  </div>
+</header>
+
+<main class="page">
+  <section class="hero-copy">
+    <div>
+      <span class="eyebrow">Satellite-observed greenness + scenario modelling</span>
+      <h2>Watch vegetation, sand pressure and tree barriers evolve.</h2>
+      <p>The terrain texture is blended from the latest available Sentinel-2 NDVI grid. The cellular automaton then explores how desert pressure and simulated planted barriers may interact under transparent scenario settings.</p>
+    </div>
+    <span class="live-time" id="last-updated">Waiting for live frame…</span>
+  </section>
+
+  <section class="twin-layout">
+    <div class="map-shell" id="twin-map-shell">
+      <div class="map" id="twin-map" aria-label="3D terrain map of northern Gombe"></div>
+      <div class="map-title">
+        <span class="eyebrow">Northern Gombe AOI</span>
+        <strong id="map-scene-title">NDVI ground texture + living tree barrier</strong>
+        <span id="map-scene-subtitle">Loading Copernicus and simulation state…</span>
+      </div>
+      <div class="metric-strip">
+        <div class="metric-tile"><small>Mean NDVI</small><b class="green" id="map-ndvi">—</b></div>
+        <div class="metric-tile"><small>Desert risk</small><b class="sand" id="map-desert">—</b></div>
+        <div class="metric-tile"><small>Tree health</small><b class="green" id="map-tree-health">—</b></div>
+      </div>
+      <div class="map-legend" aria-label="Map legend">
+        <h3>Live terrain legend</h3>
+        <div class="legend-row"><span class="legend-swatch sand"></span>Lower NDVI / sand blend</div>
+        <div class="legend-row"><span class="legend-swatch grass"></span>Higher NDVI / vegetation blend</div>
+        <div class="legend-row"><span class="legend-swatch wall"></span>Simulated tree barrier</div>
+        <div class="legend-row"><span class="legend-swatch tree"></span>3D tree health model</div>
+      </div>
+      <div class="map-controls" aria-label="Map and simulation controls">
+        <button class="control-btn active" id="view-ndvi"><span class="icon">◉</span>NDVI</button>
+        <button class="control-btn sand" id="view-risk"><span class="icon">≈</span>Risk</button>
+        <button class="control-btn" id="toggle-trees"><span class="icon">♣</span>Trees</button>
+        <button class="control-btn" id="toggle-run"><span class="icon" id="run-icon">Ⅱ</span><span id="run-label">Pause</span></button>
+        <button class="control-btn" id="toggle-orbit"><span class="icon">↻</span>Orbit</button>
+        <button class="control-btn" id="reset-view"><span class="icon">⌂</span>Reset</button>
+        <button class="control-btn" id="fullscreen-map"><span class="icon">⛶</span>Full</button>
+      </div>
+    </div>
+
+    <aside class="side-stack">
+      <section class="panel">
+        <div class="panel-head"><h3>Vegetation condition</h3><span class="source-tag" id="sentinel-mode">—</span></div>
+        <div class="panel-body">
+          <div class="kpi-grid">
+            <div class="kpi"><small>Mean NDVI</small><strong id="ndvi-mean">—</strong><em id="ndvi-window">Observation window</em></div>
+            <div class="kpi"><small>Valid coverage</small><strong id="ndvi-valid">—</strong><em>Cloud-masked pixels</em></div>
+            <div class="kpi"><small>Bare / sparse</small><strong id="ndvi-bare">—</strong><em>NDVI &lt; 0.15</em></div>
+            <div class="kpi"><small>Dense green</small><strong id="ndvi-dense">—</strong><em>NDVI ≥ 0.50</em></div>
+          </div>
+          <div class="meter"><div class="meter-top"><span>Greenness profile</span><b id="green-meter-label">—</b></div><div class="meter-track"><div class="meter-fill" id="green-meter"></div></div></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Scenario state</h3><span class="source-tag">Model</span></div>
+        <div class="panel-body">
+          <div class="kpi-grid">
+            <div class="kpi"><small>Vegetated</small><strong id="sim-vegetated">—</strong><em>Model cells</em></div>
+            <div class="kpi"><small>High desert</small><strong id="sim-desert">—</strong><em>Model cells</em></div>
+            <div class="kpi"><small>Barrier cover</small><strong id="sim-barrier">—</strong><em>Planted scenario</em></div>
+            <div class="kpi"><small>Front cells</small><strong id="sim-front">—</strong><em>Transition zone</em></div>
+          </div>
+          <div class="meter"><div class="meter-top"><span>Desert pressure</span><b id="desert-meter-label">—</b></div><div class="meter-track"><div class="meter-fill sand" id="desert-meter"></div></div></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Evidence-based interpretation</h3><span class="source-tag" id="gfw-mode">—</span></div>
+        <div class="panel-body"><div class="insight-list" id="insight-list"><p>Loading interpretation…</p></div></div>
+      </section>
+    </aside>
+  </section>
+</main>
+
+<footer class="footer">
+  NDVI is a spectral greenness indicator, not a direct measure of desertification. Global Forest Watch tree-cover loss does not establish cause. Cellular-automata outputs are scenario experiments and require local field calibration before operational use.
+</footer>
+<script type="module" src="/static/js/twin.js?v=1.0.0"></script>
+</body>
+</html>
