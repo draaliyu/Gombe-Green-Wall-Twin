@@ -255,14 +255,4 @@ JavaScript syntax can be checked with:
 Get-ChildItem app\static\js\*.js | ForEach-Object { node --check $_.FullName }
 ```
 
-## Production recommendations
 
-Before operational use:
-
-- replace the public demonstration terrain source with a production terrain provider;
-- calibrate NDVI classes using local land-cover and field observations;
-- add soils, rainfall, slope, grazing, land tenure and restoration survival datasets;
-- validate the cellular model against historical change;
-- add persistent storage for satellite snapshots and scenario runs;
-- conduct accessibility, mobile GPU and network-performance testing;
-- involve local communities and land-management authorities in corridor design.
