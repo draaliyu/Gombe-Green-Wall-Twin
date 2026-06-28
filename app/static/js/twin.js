@@ -544,3 +544,19 @@ document.getElementById("economy-toggle")?.classList.toggle("active", economyMod
 document.getElementById("close-area")?.addEventListener("click", () => document.getElementById("area-drawer")?.classList.remove("open"));
 bindFullscreen("fullscreen-map", "twin-map-shell", map);
 window.addEventListener("resize", () => map.resize(), { passive: true });
+
+async function refreshV4Intelligence() {
+  try {
+    const summary = await fetchJson("/api/intelligence/summary");
+    setText("v4-trend", String(summary.temporal?.trend || "—").replaceAll("_", " "));
+    setText("v4-drought", Number.isFinite(Number(summary.drought?.score)) ? `${Number(summary.drought.score).toFixed(0)}/100` : "—");
+    setText("v4-radar", Number.isFinite(Number(summary.radar?.mean_rvi)) ? Number(summary.radar.mean_rvi).toFixed(2) : "—");
+    setText("v4-fires", `${summary.fire?.count ?? 0} detections`);
+    setText("v4-carbon", Number.isFinite(Number(summary.carbon?.carbon_t)) ? `${Math.round(Number(summary.carbon.carbon_t)).toLocaleString()} t C` : "—");
+    setText("v4-risk", Number.isFinite(Number(summary.risks?.combined)) ? `${(Number(summary.risks.combined) * 100).toFixed(0)}%` : "—");
+  } catch (error) {
+    console.warn("Version 4 intelligence summary unavailable", error);
+  }
+}
+refreshV4Intelligence();
+window.setInterval(refreshV4Intelligence, 60000);

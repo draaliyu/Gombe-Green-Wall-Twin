@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scenario Comparison Workspace | Gombe Green Wall Twin</title><meta name="description" content="Each trajectory is a transparent model experiment. It is not a forecast of actual land outcomes, costs or planting survival.">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=4.0.0">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/static/css/styles.css?v=4.0.0">
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body class="intelligence-body" data-page="scenarios">
+<canvas class="ambient-earth-canvas" id="ambient-earth-canvas" aria-hidden="true"></canvas>
+<header class="app-header v4-header"><a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Synchronized restoration experiments</span><h1>Scenario Comparison Workspace</h1></span></a><nav class="nav intelligence-nav" aria-label="Primary services">
+<a href="/" data-nav="twin">Live Twin</a><a href="/services" data-nav="services">Services</a><a href="/timeline" data-nav="timeline">Timeline</a><a href="/drought" data-nav="drought">Drought</a><a href="/landcover" data-nav="landcover">Land Cover</a><a href="/restoration" data-nav="restoration">Restoration</a><a href="/predictions" data-nav="predictions">AI</a>
+</nav><div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span><a class="more-services" href="/services">All services</a></div></header>
+<main class="page v4-page"><section class="hero-copy v4-hero"><div><span class="eyebrow">Synchronized restoration experiments</span><h2>Compare intervention, drought, grazing, maintenance and fire scenarios.</h2><p>Each trajectory is a transparent model experiment. It is not a forecast of actual land outcomes, costs or planting survival.</p></div><span class="live-time" data-live-time>Connecting…</span></section>
+<section class="scenario-controls"><button data-scenario-focus="all" class="active">All</button><button data-scenario-focus="restoration">Restoration</button><button data-scenario-focus="stress">Stress</button><button id="scenario-play">▶ Animate</button></section>
+<section class="v4-grid"><article class="intel-card span-3"><header><h3>Vegetation and desert-pressure trajectories</h3><span id="scenario-step">Step 0</span></header><canvas class="xl-chart" id="scenario-chart"></canvas></article><article class="intel-card span-3"><header><h3>Scenario outcomes</h3></header><div id="scenario-cards" class="scenario-cards"></div></article></section></main>
+<footer class="footer v4-footer">Gombe Desertification & Afforestation Intelligence Twin • Observed, derived, modelled and scenario evidence are labelled separately.</footer>
+<script type="module" src="/static/js/intelligence.js?v=4.0.0"></script>
+</body></html>

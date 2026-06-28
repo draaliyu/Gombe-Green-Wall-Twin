@@ -8,3 +8,6 @@ __pycache__/
 data/cache/*
 !data/cache/.gitkeep
 data/history.json
+
+data/twin.sqlite3
+data/prediction_model.json

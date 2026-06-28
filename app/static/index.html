@@ -8,12 +8,12 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Gombe Desertification & Afforestation Twin">
   <meta property="og:description" content="Explore Gombe State terrain, Sentinel-2 NDVI, live weather, moving trees and transparent restoration scenarios.">
-  <meta property="og:image" content="/static/social-preview.jpg?v=3.0.0">
+  <meta property="og:image" content="/static/social-preview.jpg?v=4.0.0">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=3.0.0">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=4.0.0">
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
-  <link rel="stylesheet" href="/static/css/styles.css?v=3.0.0">
+  <link rel="stylesheet" href="/static/css/styles.css?v=4.0.0">
   <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 </head>
 <body class="command-body">
@@ -30,6 +30,7 @@
     <a href="/simulation" data-nav="simulation"><span>◉</span>Simulation</a>
     <a href="/planner" data-nav="planner"><span>♧</span>Planner</a>
     <a href="/evidence" data-nav="evidence"><span>☑</span>Evidence</a>
+    <a href="/services" data-nav="services"><span>◇</span>Intelligence</a>
   </nav>
   <div class="command-status">
     <button class="header-icon" id="economy-toggle" title="Toggle economy rendering" aria-label="Toggle economy rendering">⚙</button>
@@ -94,6 +95,15 @@
       <div><small>Moisture forcing</small><strong id="summary-moisture">—</strong><em>Weather-derived model input</em></div>
     </section>
 
+    <section class="v4-command-intelligence" aria-label="Version 4 intelligence services">
+      <a href="/timeline"><small>Temporal trend</small><strong id="v4-trend">—</strong></a>
+      <a href="/drought"><small>Drought screen</small><strong id="v4-drought">—</strong></a>
+      <a href="/radar"><small>Radar RVI</small><strong id="v4-radar">—</strong></a>
+      <a href="/risks"><small>Thermal anomalies</small><strong id="v4-fires">—</strong></a>
+      <a href="/ecosystems"><small>Carbon screen</small><strong id="v4-carbon">—</strong></a>
+      <a href="/restoration"><small>Combined risk</small><strong id="v4-risk">—</strong></a>
+      <a href="/services" class="all-intel"><small>More</small><strong>All services →</strong></a>
+    </section>
     <section class="immersive-stage" id="twin-map-shell">
       <div class="map" id="twin-map" aria-label="Immersive 3D Gombe State environmental twin"></div>
       <div class="ground-sky-split" id="ground-sky-split" aria-hidden="true"><canvas id="panorama-sky"></canvas><div class="horizon-label">GROUND + SKY IMMERSIVE VIEW</div></div>
@@ -174,6 +184,6 @@
 </main>
 
 <footer class="command-footer"><span id="footer-coordinates">Gombe State • Northern focus</span><span>Sentinel-2 NDVI • OpenWeather • Global Forest Watch • Transparent cellular simulation</span><span id="last-updated">Connecting…</span></footer>
-<script type="module" src="/static/js/twin.js?v=3.0.0"></script>
+<script type="module" src="/static/js/twin.js?v=4.0.0"></script>
 </body>
 </html>

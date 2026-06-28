@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Restoration Suitability & Route Optimiser | Gombe Green Wall Twin</title><meta name="description" content="Suitability combines degraded-but-recoverable condition, moisture support, access proximity, terrain-gradient proxy, rainfall support and thermal-anomaly avoidance. It remains a screening tool pending field verification and community consent.">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=4.0.0">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/static/css/styles.css?v=4.0.0">
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body class="intelligence-body" data-page="restoration">
+<canvas class="ambient-earth-canvas" id="ambient-earth-canvas" aria-hidden="true"></canvas>
+<header class="app-header v4-header"><a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Great Green Wall planning intelligence</span><h1>Restoration Suitability & Route Optimiser</h1></span></a><nav class="nav intelligence-nav" aria-label="Primary services">
+<a href="/" data-nav="twin">Live Twin</a><a href="/services" data-nav="services">Services</a><a href="/timeline" data-nav="timeline">Timeline</a><a href="/drought" data-nav="drought">Drought</a><a href="/landcover" data-nav="landcover">Land Cover</a><a href="/restoration" data-nav="restoration">Restoration</a><a href="/predictions" data-nav="predictions">AI</a>
+</nav><div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span><a class="more-services" href="/services">All services</a></div></header>
+<main class="page v4-page"><section class="hero-copy v4-hero"><div><span class="eyebrow">Great Green Wall planning intelligence</span><h2>Compare planting suitability and generate alternative protective corridors.</h2><p>Suitability combines degraded-but-recoverable condition, moisture support, access proximity, terrain-gradient proxy, rainfall support and thermal-anomaly avoidance. It remains a screening tool pending field verification and community consent.</p></div><span class="live-time" data-live-time>Connecting…</span></section>
+<section class="v4-map-stage"><div class="map" id="restoration-map"></div><div class="route-panel"><h3>Route optimiser</h3><p>Tap the map to set start and end, or use the default cross-state corridor.</p><div><button id="route-start">Set start</button><button id="route-end">Set end</button><button id="route-generate">Generate routes</button><button id="route-clear">Clear</button></div><span id="route-status">Loading suitability…</span></div></section>
+<section class="v4-grid"><article class="intel-card"><header><h3>Suitability classes</h3><span id="suitability-mode">—</span></header><div id="suitability-classes" class="metric-list"></div></article><article class="intel-card span-2"><header><h3>Alternative routes</h3></header><div id="route-cards" class="route-cards"></div></article><article class="intel-card span-3"><header><h3>Decision factors and limitations</h3></header><div id="suitability-factors" class="factor-grid"></div></article></section></main>
+<footer class="footer v4-footer">Gombe Desertification & Afforestation Intelligence Twin • Observed, derived, modelled and scenario evidence are labelled separately.</footer>
+<script type="module" src="/static/js/intelligence.js?v=4.0.0"></script>
+</body></html>

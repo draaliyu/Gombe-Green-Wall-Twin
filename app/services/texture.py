@@ -128,3 +128,11 @@ def mask_texture_to_features(
     output = BytesIO()
     image.save(output, format="PNG", optimize=True)
     return output.getvalue()
+
+
+def array_to_rgba_png(array: np.ndarray) -> bytes:
+    """Encode a uint8 RGBA array as PNG bytes."""
+    image = Image.fromarray(array.astype(np.uint8), mode="RGBA")
+    output = BytesIO()
+    image.save(output, format="PNG", optimize=True)
+    return output.getvalue()

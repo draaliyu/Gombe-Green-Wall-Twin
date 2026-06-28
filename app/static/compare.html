@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Satellite-to-Ground Comparison | Gombe Green Wall Twin</title><meta name="description" content="Selecting a time or area updates the satellite, classification and ground-simulation panels together so users can see how observations differ from derived and scenario layers.">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=4.0.0">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/static/css/styles.css?v=4.0.0">
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body class="intelligence-body" data-page="compare">
+<canvas class="ambient-earth-canvas" id="ambient-earth-canvas" aria-hidden="true"></canvas>
+<header class="app-header v4-header"><a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Synchronized evidence views</span><h1>Satellite-to-Ground Comparison</h1></span></a><nav class="nav intelligence-nav" aria-label="Primary services">
+<a href="/" data-nav="twin">Live Twin</a><a href="/services" data-nav="services">Services</a><a href="/timeline" data-nav="timeline">Timeline</a><a href="/drought" data-nav="drought">Drought</a><a href="/landcover" data-nav="landcover">Land Cover</a><a href="/restoration" data-nav="restoration">Restoration</a><a href="/predictions" data-nav="predictions">AI</a>
+</nav><div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span><a class="more-services" href="/services">All services</a></div></header>
+<main class="page v4-page"><section class="hero-copy v4-hero"><div><span class="eyebrow">Synchronized evidence views</span><h2>Compare satellite greenness, classified cover and immersive ground state.</h2><p>Selecting a time or area updates the satellite, classification and ground-simulation panels together so users can see how observations differ from derived and scenario layers.</p></div><span class="live-time" data-live-time>Connecting…</span></section>
+<section class="triple-compare"><article><header>Sentinel-2 NDVI</header><div class="map" id="compare-ndvi"></div></article><article><header>Land-cover classification</header><div class="map" id="compare-landcover"></div></article><article><header>Immersive ground simulation</header><canvas id="compare-ground"></canvas></article></section><section class="compare-controls"><input id="compare-time" type="range" min="0" max="1" value="0"><strong id="compare-period">—</strong><button id="compare-play">▶ Play</button></section><section class="v4-grid"><article class="intel-card span-3"><header><h3>What agrees, what differs</h3></header><div id="compare-explanation" class="evidence-stack"></div></article></section></main>
+<footer class="footer v4-footer">Gombe Desertification & Afforestation Intelligence Twin • Observed, derived, modelled and scenario evidence are labelled separately.</footer>
+<script type="module" src="/static/js/intelligence.js?v=4.0.0"></script>
+</body></html>

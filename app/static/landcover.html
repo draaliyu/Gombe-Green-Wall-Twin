@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Land-Cover Intelligence | Gombe Green Wall Twin</title><meta name="description" content="The page displays external Dynamic World statistics when configured; otherwise it shows a transparent NDVI/radar/model-derived screening classification and labels it accordingly.">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=4.0.0">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/static/css/styles.css?v=4.0.0">
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body class="intelligence-body" data-page="landcover">
+<canvas class="ambient-earth-canvas" id="ambient-earth-canvas" aria-hidden="true"></canvas>
+<header class="app-header v4-header"><a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Nine-class land-cover service</span><h1>Land-Cover Intelligence</h1></span></a><nav class="nav intelligence-nav" aria-label="Primary services">
+<a href="/" data-nav="twin">Live Twin</a><a href="/services" data-nav="services">Services</a><a href="/timeline" data-nav="timeline">Timeline</a><a href="/drought" data-nav="drought">Drought</a><a href="/landcover" data-nav="landcover">Land Cover</a><a href="/restoration" data-nav="restoration">Restoration</a><a href="/predictions" data-nav="predictions">AI</a>
+</nav><div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span><a class="more-services" href="/services">All services</a></div></header>
+<main class="page v4-page"><section class="hero-copy v4-hero"><div><span class="eyebrow">Nine-class land-cover service</span><h2>Move beyond NDVI with land-cover probabilities and confidence.</h2><p>The page displays external Dynamic World statistics when configured; otherwise it shows a transparent NDVI/radar/model-derived screening classification and labels it accordingly.</p></div><span class="live-time" data-live-time>Connecting…</span></section>
+<section class="v4-map-stage"><div class="map" id="landcover-map"></div><div class="floating-panel" id="landcover-legend"></div><div class="map-toolbar"><button id="landcover-state">State</button><button id="landcover-north">North</button><button id="landcover-full">Full</button></div></section>
+<section class="v4-grid"><article class="intel-card"><header><h3>Dominant class</h3><span id="landcover-mode">—</span></header><div class="big-metric" id="landcover-dominant">—</div><p id="landcover-confidence"></p></article><article class="intel-card span-2"><header><h3>Class distribution</h3></header><canvas class="medium-chart" id="landcover-chart"></canvas></article><article class="intel-card span-3"><header><h3>How this layer was produced</h3></header><div id="landcover-note" class="evidence-stack"></div></article></section></main>
+<footer class="footer v4-footer">Gombe Desertification & Afforestation Intelligence Twin • Observed, derived, modelled and scenario evidence are labelled separately.</footer>
+<script type="module" src="/static/js/intelligence.js?v=4.0.0"></script>
+</body></html>

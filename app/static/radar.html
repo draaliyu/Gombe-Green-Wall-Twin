@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cloud-Independent Radar Evidence | Gombe Green Wall Twin</title><meta name="description" content="Sentinel-1 GRD backscatter and radar vegetation index provide all-weather structural context. Backscatter is not a direct soil-moisture or biomass measurement.">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=4.0.0">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/static/css/styles.css?v=4.0.0">
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body class="intelligence-body" data-page="radar">
+<canvas class="ambient-earth-canvas" id="ambient-earth-canvas" aria-hidden="true"></canvas>
+<header class="app-header v4-header"><a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Sentinel-1 structural and moisture-sensitive evidence</span><h1>Cloud-Independent Radar Evidence</h1></span></a><nav class="nav intelligence-nav" aria-label="Primary services">
+<a href="/" data-nav="twin">Live Twin</a><a href="/services" data-nav="services">Services</a><a href="/timeline" data-nav="timeline">Timeline</a><a href="/drought" data-nav="drought">Drought</a><a href="/landcover" data-nav="landcover">Land Cover</a><a href="/restoration" data-nav="restoration">Restoration</a><a href="/predictions" data-nav="predictions">AI</a>
+</nav><div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span><a class="more-services" href="/services">All services</a></div></header>
+<main class="page v4-page"><section class="hero-copy v4-hero"><div><span class="eyebrow">Sentinel-1 structural and moisture-sensitive evidence</span><h2>Monitor land condition when optical imagery is cloud-obscured.</h2><p>Sentinel-1 GRD backscatter and radar vegetation index provide all-weather structural context. Backscatter is not a direct soil-moisture or biomass measurement.</p></div><span class="live-time" data-live-time>Connecting…</span></section>
+<section class="v4-map-stage radar-stage"><div class="map" id="radar-map"></div><canvas id="radar-sweep" class="radar-sweep"></canvas><div class="radar-hud"><strong id="radar-rvi">—</strong><span>Mean RVI</span><small id="radar-mode">—</small></div></section>
+<section class="v4-grid"><article class="intel-card"><header><h3>Backscatter</h3></header><div class="metric-ribbon vertical" id="radar-metrics"></div></article><article class="intel-card span-2"><header><h3>Radar interpretation</h3></header><div id="radar-interpretation" class="evidence-stack"></div></article><article class="intel-card span-3"><header><h3>Optical–radar comparison</h3></header><canvas class="medium-chart" id="radar-comparison"></canvas></article></section></main>
+<footer class="footer v4-footer">Gombe Desertification & Afforestation Intelligence Twin • Observed, derived, modelled and scenario evidence are labelled separately.</footer>
+<script type="module" src="/static/js/intelligence.js?v=4.0.0"></script>
+</body></html>

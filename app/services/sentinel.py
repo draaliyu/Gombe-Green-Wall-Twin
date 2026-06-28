@@ -234,3 +234,76 @@ class SentinelNDVIService:
                 texture_version=self._texture_version,
             )
             return SatelliteData(snapshot, ndvi, valid, ndvi_to_texture(ndvi, valid))
+
+    async def fetch_window_statistics(
+        self,
+        start: datetime,
+        end: datetime,
+        width: int = 48,
+        height: int = 36,
+    ) -> dict[str, Any]:
+        """Fetch a compact cloud-masked Sentinel-2 mosaic for temporal backfill.
+
+        This action is intentionally not scheduled because a multi-month backfill
+        consumes processing units. It is exposed only through a protected admin
+        endpoint in Version 4.
+        """
+        if not self.settings.has_copernicus_credentials:
+            raise RuntimeError("Copernicus credentials are not configured")
+        token = await self._get_token()
+        west, south, east, north = self.settings.aoi_bbox
+        payload: dict[str, Any] = {
+            "input": {
+                "bounds": {
+                    "bbox": [west, south, east, north],
+                    "properties": {"crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"},
+                },
+                "data": [{
+                    "type": "sentinel-2-l2a",
+                    "dataFilter": {
+                        "timeRange": {
+                            "from": start.isoformat().replace("+00:00", "Z"),
+                            "to": end.isoformat().replace("+00:00", "Z"),
+                        },
+                        "maxCloudCoverage": self.settings.sentinel_max_cloud_percent,
+                        "mosaickingOrder": "leastCC",
+                    },
+                }],
+            },
+            "output": {
+                "width": width,
+                "height": height,
+                "responses": [{"identifier": "default", "format": {"type": "image/tiff"}}],
+            },
+            "evalscript": NDVI_EVALSCRIPT,
+        }
+        response = await self.client.post(
+            self.settings.copernicus_process_url,
+            json=payload,
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=120.0,
+        )
+        response.raise_for_status()
+        array = tifffile.imread(BytesIO(response.content))
+        if array.ndim == 3 and array.shape[-1] >= 2:
+            ndvi = array[..., 0].astype(np.float32)
+            valid = array[..., 1] > 0.5
+        elif array.ndim == 3 and array.shape[0] >= 2:
+            ndvi = array[0].astype(np.float32)
+            valid = array[1] > 0.5
+        else:
+            raise ValueError(f"Unexpected Sentinel-2 TIFF shape: {array.shape}")
+        valid &= np.isfinite(ndvi) & (ndvi > -2.0) & (ndvi <= 1.0)
+        if np.count_nonzero(valid) < 10:
+            raise ValueError("Too few valid pixels in temporal mosaic")
+        stats = calculate_stats(np.clip(ndvi, -1, 1), valid)
+        return {
+            "period": start.strftime("%Y-%m"),
+            "window_start": start.isoformat(),
+            "window_end": end.isoformat(),
+            "ndvi": stats.mean,
+            "bare_fraction": stats.bare_fraction,
+            "dense_fraction": stats.dense_fraction,
+            "valid_fraction": stats.valid_fraction,
+            "mode": "sentinel_2_archive",
+        }
