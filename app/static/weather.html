@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Weather & Sky | Gombe Green Wall Twin</title>
+  <meta name="description" content="Live animated sun, moon, stars, clouds, rain and wind across Gombe State using current weather observations.">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=2.0.0">
+  <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Atmospheric Forcing Service</span><h1>Weather & Sky</h1></span></a>
+  <nav class="nav" aria-label="Primary services">
+    <a href="/" data-nav="twin">Live Twin</a><a href="/areas" data-nav="areas">LGA Explorer</a><a href="/weather" data-nav="weather">Weather & Sky</a><a href="/satellite" data-nav="satellite">Satellite NDVI</a><a href="/simulation" data-nav="simulation">Simulation Lab</a><a href="/planner" data-nav="planner">Green Wall Planner</a><a href="/evidence" data-nav="evidence">Evidence</a>
+  </nav>
+  <div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span></div>
+</header>
+<main class="page">
+  <section class="hero-copy">
+    <div><span class="eyebrow">Observed weather → animated environmental forcing</span><h2>Watch the current daylight cycle, clouds, rain and wind move across northern Gombe.</h2><p>The animation responds to reported cloud cover, rainfall, wind speed, wind direction, visibility, sunrise and sunset. It is a weather visualisation, not meteorological radar.</p></div>
+    <span class="live-time" id="weather-last-updated">Connecting to weather…</span>
+  </section>
+
+  <section class="weather-stage" id="weather-stage">
+    <div class="map" id="weather-map" aria-label="Animated weather map of Gombe State"></div>
+    <div class="weather-overlay-card">
+      <span class="eyebrow" id="weather-source-label">Current weather</span>
+      <h2 id="weather-main">Loading weather</h2>
+      <p id="weather-explanation">The live scene will explain how temperature, humidity, cloud, rain and wind influence the restoration scenario.</p>
+    </div>
+    <div class="weather-ribbon">
+      <div><small>Temperature</small><strong id="weather-page-temp">—</strong></div>
+      <div><small>Feels like</small><strong id="weather-page-feels">—</strong></div>
+      <div><small>Humidity</small><strong id="weather-page-humidity">—</strong></div>
+      <div><small>Wind</small><strong id="weather-page-wind">—</strong></div>
+      <div><small>Cloud cover</small><strong id="weather-page-clouds">—</strong></div>
+      <div><small>Rain, 1 hour</small><strong id="weather-page-rain">—</strong></div>
+    </div>
+    <div class="map-controls">
+      <button class="control-btn" id="weather-state"><span class="icon">▱</span>State</button>
+      <button class="control-btn active" id="weather-north"><span class="icon">⌖</span>North</button>
+      <button class="control-btn active" id="weather-celestial"><span class="icon">☀</span>Sun/Moon</button>
+      <button class="control-btn active" id="weather-clouds"><span class="icon">☁</span>Clouds</button>
+      <button class="control-btn active" id="weather-wind"><span class="icon">≋</span>Wind</button>
+      <button class="control-btn active" id="weather-rain"><span class="icon">☂</span>Rain</button>
+      <button class="control-btn" id="weather-refresh"><span class="icon">↻</span>Refresh</button>
+      <button class="control-btn" id="weather-full"><span class="icon">⛶</span>Full</button>
+    </div>
+  </section>
+
+  <section class="data-grid" style="margin-top:14px">
+    <article class="card wide"><h3>What the live weather means for the land scenario</h3><div class="card-content"><div class="area-evidence" id="weather-interpretation"></div></div></article>
+    <article class="card"><h3>Daylight cycle</h3><div class="card-content"><div class="kpi-grid"><div class="kpi"><small>Sunrise</small><strong id="weather-sunrise">—</strong></div><div class="kpi"><small>Sunset</small><strong id="weather-sunset">—</strong></div><div class="kpi"><small>Current sky</small><strong id="weather-daylight">—</strong></div><div class="kpi"><small>Visibility</small><strong id="weather-visibility">—</strong></div></div></div></article>
+    <article class="card"><h3>Simulation forcing</h3><div class="card-content"><div class="meter"><div class="meter-top"><span>Moisture support</span><b id="weather-force-moisture-label">—</b></div><div class="meter-track"><div class="meter-fill blue" id="weather-force-moisture"></div></div></div><div class="meter"><div class="meter-top"><span>Heat stress</span><b id="weather-force-heat-label">—</b></div><div class="meter-track"><div class="meter-fill sand" id="weather-force-heat"></div></div></div><p>These are bounded model inputs derived from current weather. They are not direct soil-moisture or evapotranspiration measurements.</p></div></article>
+  </section>
+</main>
+<footer class="footer">This service animates reported weather conditions. Cloud and wind movement are visual representations driven by current values; they are not Doppler radar or a numerical weather-model field.</footer>
+<script type="module" src="/static/js/weather.js?v=2.0.0"></script>
+</body>
+</html>

@@ -32,7 +32,7 @@ def ndvi_to_texture(ndvi: np.ndarray, valid: np.ndarray, width: int = 960, heigh
     gy, gx = np.gradient(values)
     shade = np.clip(1.0 + (gx * -0.32 + gy * 0.24), 0.82, 1.18)[..., None]
     rgb *= shade
-    alpha = np.where(valid, 220, 30).astype(np.uint8)
+    alpha = np.where(valid, 220, 0).astype(np.uint8)
     rgba = np.dstack([np.clip(rgb, 0, 255).astype(np.uint8), alpha])
 
     image = Image.fromarray(rgba, "RGBA").resize((width, height), Image.Resampling.BICUBIC)
@@ -83,4 +83,48 @@ def make_social_preview() -> bytes:
     draw.text((62, 162), "Live NDVI • Cellular automata • Great Green Wall planning", fill=(185, 205, 193))
     output = BytesIO()
     image.save(output, format="JPEG", quality=91, optimize=True)
+    return output.getvalue()
+
+
+def mask_texture_to_features(
+    texture_png: bytes,
+    feature_collection: dict,
+    bbox: tuple[float, float, float, float],
+) -> bytes:
+    """Apply an alpha mask so rectangular image sources only appear inside selected polygons."""
+    image = Image.open(BytesIO(texture_png)).convert("RGBA")
+    width, height = image.size
+    mask = Image.new("L", (width, height), 0)
+    draw = ImageDraw.Draw(mask)
+    west, south, east, north = bbox
+
+    def project(point: list[float]) -> tuple[float, float]:
+        longitude, latitude = float(point[0]), float(point[1])
+        x = (longitude - west) / max(east - west, 1e-9) * (width - 1)
+        y = (north - latitude) / max(north - south, 1e-9) * (height - 1)
+        return x, y
+
+    for feature in feature_collection.get("features", []):
+        geometry = feature.get("geometry") or {}
+        coordinates = geometry.get("coordinates") or []
+        polygons = coordinates if geometry.get("type") == "MultiPolygon" else [coordinates]
+        for polygon in polygons:
+            if not polygon:
+                continue
+            exterior = [project(point) for point in polygon[0]]
+            if len(exterior) >= 3:
+                draw.polygon(exterior, fill=255)
+            for hole in polygon[1:]:
+                projected = [project(point) for point in hole]
+                if len(projected) >= 3:
+                    draw.polygon(projected, fill=0)
+
+    original_alpha = image.getchannel("A")
+    combined = Image.fromarray(
+        np.minimum(np.asarray(original_alpha, dtype=np.uint8), np.asarray(mask, dtype=np.uint8)),
+        mode="L",
+    )
+    image.putalpha(combined)
+    output = BytesIO()
+    image.save(output, format="PNG", optimize=True)
     return output.getvalue()

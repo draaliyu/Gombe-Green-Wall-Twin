@@ -45,8 +45,8 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "Northern Gombe Desertification & Afforestation Twin"
-    app_version: str = "1.0.0"
+    app_name: str = "Gombe Desertification & Afforestation Digital Twin"
+    app_version: str = "2.0.0"
     debug: bool = False
 
     copernicus_client_id: str = ""
@@ -60,6 +60,11 @@ class Settings(BaseSettings):
     gfw_origin: str = ""
     gfw_dataset: str = "umd_tree_cover_loss"
     gfw_dataset_version: str = "latest"
+
+    openweather_api_key: str = ""
+    openweather_current_url: str = "https://api.openweathermap.org/data/2.5/weather"
+    weather_refresh_seconds: int = Field(default=300, ge=60)
+    weather_cache_seconds: int = Field(default=240, ge=30)
 
     aoi_bbox: BBox = (10.55, 10.20, 11.85, 11.55)
     sentinel_lookback_days: int = Field(default=35, ge=5, le=180)
@@ -82,6 +87,10 @@ class Settings(BaseSettings):
     @property
     def has_gfw_credentials(self) -> bool:
         return bool(self.gfw_api_key)
+
+    @property
+    def has_weather_credentials(self) -> bool:
+        return bool(self.openweather_api_key)
 
 
 @lru_cache(maxsize=1)

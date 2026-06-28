@@ -19,9 +19,9 @@ let lastTextureVersion = -1;
 let classified = false;
 let latestGrid = null;
 
-map.on("load", () => {
+map.on("administrativeready", () => {
   map.addSource("sat-ndvi", { type: "image", url: `/api/ndvi/texture.png?t=${Date.now()}`, coordinates: AOI.coordinates });
-  map.addLayer({ id: "sat-ndvi-layer", type: "raster", source: "sat-ndvi", paint: { "raster-opacity": 0.82, "raster-contrast": 0.1, "raster-saturation": 0.1 } });
+  map.addLayer({ id: "sat-ndvi-layer", type: "raster", source: "sat-ndvi", paint: { "raster-opacity": 0.82, "raster-contrast": 0.1, "raster-saturation": 0.1 } }, "northern-focus-fill");
   fitAOI(map, window.innerWidth < 760 ? 24 : 48);
 });
 

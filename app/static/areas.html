@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gombe LGA Explorer | Desertification & Afforestation Twin</title>
+  <meta name="description" content="Explore all Gombe State LGAs and inspect northern Gombe vegetation, weather, desert-pressure and restoration evidence.">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=2.0.0">
+  <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Area Evidence Service</span><h1>Gombe LGA Explorer</h1></span></a>
+  <nav class="nav" aria-label="Primary services">
+    <a href="/" data-nav="twin">Live Twin</a><a href="/areas" data-nav="areas">LGA Explorer</a><a href="/weather" data-nav="weather">Weather & Sky</a><a href="/satellite" data-nav="satellite">Satellite NDVI</a><a href="/simulation" data-nav="simulation">Simulation Lab</a><a href="/planner" data-nav="planner">Green Wall Planner</a><a href="/evidence" data-nav="evidence">Evidence</a>
+  </nav>
+  <div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span></div>
+</header>
+<main class="page">
+  <section class="hero-copy">
+    <div><span class="eyebrow">All eleven LGAs • five northern-focus LGAs</span><h2>Select an LGA to see what the satellite, weather and simulation currently indicate.</h2><p>Observed, modelled and contextual evidence are kept separate. The northern focus consists of Dukku, Funakaye, Gombe, Kwami and Nafada.</p></div>
+    <span class="live-time" id="areas-last-updated">Connecting to live state…</span>
+  </section>
+
+  <section class="area-layout">
+    <article class="card wide">
+      <h3>Gombe State and northern-focus LGAs</h3>
+      <div class="card-content">
+        <div class="service-map" id="areas-map-shell">
+          <div class="map" id="areas-map" aria-label="Interactive Gombe LGA map"></div>
+          <div class="map-controls">
+            <button class="control-btn" id="areas-state"><span class="icon">▱</span>State</button>
+            <button class="control-btn active" id="areas-north"><span class="icon">⌖</span>North</button>
+            <button class="control-btn" id="areas-full"><span class="icon">⛶</span>Full</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <aside class="side-stack">
+      <section class="panel">
+        <div class="panel-head"><h3>Local government areas</h3><span class="source-tag" id="areas-count">11 LGAs</span></div>
+        <div class="panel-body"><div class="area-list" id="area-list"></div></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h3 id="selected-area-name">Select an LGA</h3><span class="source-tag" id="selected-area-scope">State context</span></div>
+        <div class="panel-body">
+          <div class="kpi-grid">
+            <div class="kpi"><small>Mean NDVI</small><strong id="selected-ndvi">—</strong><em id="selected-ndvi-mode">Satellite mode</em></div>
+            <div class="kpi"><small>Very sparse pixels</small><strong id="selected-bare">—</strong><em>NDVI &lt; 0.15</em></div>
+            <div class="kpi"><small>Temperature</small><strong id="selected-temp">—</strong><em id="selected-condition">Current condition</em></div>
+            <div class="kpi"><small>Wind</small><strong id="selected-wind">—</strong><em>Direction and speed</em></div>
+            <div class="kpi"><small>Modelled desert</small><strong id="selected-desert">—</strong><em>Scenario cells</em></div>
+            <div class="kpi"><small>Barrier footprint</small><strong id="selected-barrier">—</strong><em>Committed scenario</em></div>
+          </div>
+          <div class="area-evidence" id="selected-interpretation"><article><h4>How to use this page</h4><p>Choose any LGA from the map or list. Northern LGAs receive NDVI and cellular-grid summaries where the current analysis grid intersects their boundaries.</p></article></div>
+        </div>
+      </section>
+    </aside>
+  </section>
+</main>
+<footer class="footer">LGA summaries aggregate available pixels and model cells inside each boundary. Weather is queried at the LGA centroid. Values labelled demo are not observations.</footer>
+<script type="module" src="/static/js/areas.js?v=2.0.0"></script>
+</body>
+</html>

@@ -3,26 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Northern Gombe Desertification & Afforestation Twin</title>
-  <meta name="description" content="A live Sentinel-2 NDVI and Great Green Wall digital twin for northern Gombe State, with 3D terrain, growing tree barriers and cellular-automata scenario simulation.">
+  <title>Gombe Desertification & Afforestation Digital Twin</title>
+  <meta name="description" content="A live Gombe State environmental twin combining Sentinel-2 NDVI, current weather, Global Forest Watch context, dynamic trees and Great Green Wall scenario modelling.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Northern Gombe Desertification & Afforestation Twin">
-  <meta property="og:description" content="Explore live vegetation condition, desertification scenarios and simulated Great Green Wall interventions across northern Gombe State.">
+  <meta property="og:title" content="Gombe Desertification & Afforestation Digital Twin">
+  <meta property="og:description" content="Explore full Gombe State, northern LGAs, satellite vegetation, live weather and Great Green Wall scenarios.">
   <meta property="og:image" content="/static/social-preview.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
-  <link rel="stylesheet" href="/static/css/styles.css?v=1.0.0">
+  <link rel="stylesheet" href="/static/css/styles.css?v=2.0.0">
   <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 </head>
 <body>
 <header class="app-header">
   <a class="brand" href="/">
     <span class="brand-mark" aria-hidden="true"></span>
-    <span><span class="eyebrow">Great Green Wall Digital Twin</span><h1>Northern Gombe Desertification & Afforestation Twin</h1></span>
+    <span><span class="eyebrow">Great Green Wall Environmental Intelligence</span><h1>Gombe Desertification & Afforestation Digital Twin</h1></span>
   </a>
   <nav class="nav" aria-label="Primary services">
     <a href="/" data-nav="twin">Live Twin</a>
+    <a href="/areas" data-nav="areas">LGA Explorer</a>
+    <a href="/weather" data-nav="weather">Weather & Sky</a>
     <a href="/satellite" data-nav="satellite">Satellite NDVI</a>
     <a href="/simulation" data-nav="simulation">Simulation Lab</a>
     <a href="/planner" data-nav="planner">Green Wall Planner</a>
@@ -37,52 +39,85 @@
 <main class="page">
   <section class="hero-copy">
     <div>
-      <span class="eyebrow">Satellite-observed greenness + scenario modelling</span>
-      <h2>Watch vegetation, sand pressure and tree barriers evolve.</h2>
-      <p>The terrain texture is blended from the latest available Sentinel-2 NDVI grid. The cellular automaton then explores how desert pressure and simulated planted barriers may interact under transparent scenario settings.</p>
+      <span class="eyebrow">Full state context • northern Gombe focus • live environmental forcing</span>
+      <h2>See where vegetation is changing, how weather influences the scenario, and how tree barriers could respond.</h2>
+      <p>The state boundary and all eleven LGAs remain visible. Sentinel-2 NDVI and the cellular model are clipped to the five northern-focus LGAs: Dukku, Funakaye, Gombe, Kwami and Nafada.</p>
     </div>
-    <span class="live-time" id="last-updated">Waiting for live frame…</span>
+    <span class="live-time" id="last-updated">Connecting to the live twin…</span>
   </section>
 
   <section class="twin-layout">
     <div class="map-shell" id="twin-map-shell">
-      <div class="map" id="twin-map" aria-label="3D terrain map of northern Gombe"></div>
+      <div class="map" id="twin-map" aria-label="3D map of Gombe State and northern Gombe"></div>
       <div class="map-title">
-        <span class="eyebrow">Northern Gombe AOI</span>
-        <strong id="map-scene-title">NDVI ground texture + living tree barrier</strong>
-        <span id="map-scene-subtitle">Loading Copernicus and simulation state…</span>
+        <span class="eyebrow">Gombe State → Northern Gombe focus</span>
+        <strong id="map-scene-title">Live land, weather and restoration scene</strong>
+        <span id="map-scene-subtitle">Connecting to satellite, weather and model services…</span>
       </div>
       <div class="metric-strip">
         <div class="metric-tile"><small>Mean NDVI</small><b class="green" id="map-ndvi">—</b></div>
-        <div class="metric-tile"><small>Desert risk</small><b class="sand" id="map-desert">—</b></div>
+        <div class="metric-tile"><small>High desert pressure</small><b class="sand" id="map-desert">—</b></div>
         <div class="metric-tile"><small>Tree health</small><b class="green" id="map-tree-health">—</b></div>
       </div>
       <div class="map-legend" aria-label="Map legend">
-        <h3>Live terrain legend</h3>
-        <div class="legend-row"><span class="legend-swatch sand"></span>Lower NDVI / sand blend</div>
-        <div class="legend-row"><span class="legend-swatch grass"></span>Higher NDVI / vegetation blend</div>
-        <div class="legend-row"><span class="legend-swatch wall"></span>Simulated tree barrier</div>
-        <div class="legend-row"><span class="legend-swatch tree"></span>3D tree health model</div>
+        <h3>Live scene legend</h3>
+        <div class="legend-row"><span class="legend-swatch state"></span>Gombe State boundary</div>
+        <div class="legend-row"><span class="legend-swatch north"></span>Northern-focus LGAs</div>
+        <div class="legend-row"><span class="legend-swatch sand"></span>Lower NDVI / dry surface</div>
+        <div class="legend-row"><span class="legend-swatch grass"></span>Higher NDVI / vegetation</div>
+        <div class="legend-row"><span class="legend-swatch wall"></span>Committed tree barrier</div>
+        <div class="legend-row"><span class="legend-swatch wind"></span>Current wind movement</div>
       </div>
       <div class="map-controls" aria-label="Map and simulation controls">
+        <button class="control-btn" id="view-state"><span class="icon">▱</span>State</button>
+        <button class="control-btn active" id="view-north"><span class="icon">⌖</span>North</button>
         <button class="control-btn active" id="view-ndvi"><span class="icon">◉</span>NDVI</button>
-        <button class="control-btn sand" id="view-risk"><span class="icon">≈</span>Risk</button>
-        <button class="control-btn" id="toggle-trees"><span class="icon">♣</span>Trees</button>
+        <button class="control-btn sand active" id="view-risk"><span class="icon">≈</span>Risk</button>
+        <button class="control-btn active" id="toggle-trees"><span class="icon">♣</span>Trees</button>
+        <button class="control-btn active" id="toggle-weather"><span class="icon">☁</span>Sky</button>
         <button class="control-btn" id="toggle-run"><span class="icon" id="run-icon">Ⅱ</span><span id="run-label">Pause</span></button>
         <button class="control-btn" id="toggle-orbit"><span class="icon">↻</span>Orbit</button>
-        <button class="control-btn" id="reset-view"><span class="icon">⌂</span>Reset</button>
         <button class="control-btn" id="fullscreen-map"><span class="icon">⛶</span>Full</button>
       </div>
+      <aside class="area-drawer" id="area-drawer" aria-live="polite">
+        <button class="drawer-close" id="close-area" aria-label="Close LGA details">×</button>
+        <span class="eyebrow" id="area-scope">Select an LGA</span>
+        <h3 id="area-name">LGA evidence</h3>
+        <div class="drawer-grid">
+          <div><small>Mean NDVI</small><strong id="area-ndvi">—</strong></div>
+          <div><small>Very sparse pixels</small><strong id="area-bare">—</strong></div>
+          <div><small>Modelled high desert</small><strong id="area-desert">—</strong></div>
+          <div><small>Tree barrier</small><strong id="area-barrier">—</strong></div>
+        </div>
+        <p class="drawer-weather" id="area-weather">Tap an LGA to load current evidence.</p>
+        <div class="drawer-insights" id="area-interpretations"></div>
+      </aside>
     </div>
 
     <aside class="side-stack">
+      <section class="panel">
+        <div class="panel-head"><h3>Current weather & sky</h3><span class="source-tag" id="weather-mode">—</span></div>
+        <div class="panel-body">
+          <div class="weather-hero"><span class="weather-orb" aria-hidden="true"></span><div><strong id="weather-temp">—</strong><span id="weather-condition">Current condition</span></div></div>
+          <div class="kpi-grid compact">
+            <div class="kpi"><small>Humidity</small><strong id="weather-humidity">—</strong></div>
+            <div class="kpi"><small>Wind</small><strong id="weather-wind">—</strong></div>
+            <div class="kpi"><small>Rain, 1 hour</small><strong id="weather-rain">—</strong></div>
+            <div class="kpi"><small>Sky cycle</small><strong id="weather-sky">—</strong></div>
+          </div>
+          <div class="meter"><div class="meter-top"><span>Weather moisture forcing</span></div><div class="meter-track"><div class="meter-fill blue" id="weather-moisture"></div></div></div>
+          <div class="meter"><div class="meter-top"><span>Weather heat stress</span></div><div class="meter-track"><div class="meter-fill sand" id="weather-heat"></div></div></div>
+          <a class="inline-link" href="/weather">Open the animated Weather & Sky service →</a>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-head"><h3>Vegetation condition</h3><span class="source-tag" id="sentinel-mode">—</span></div>
         <div class="panel-body">
           <div class="kpi-grid">
             <div class="kpi"><small>Mean NDVI</small><strong id="ndvi-mean">—</strong><em id="ndvi-window">Observation window</em></div>
             <div class="kpi"><small>Valid coverage</small><strong id="ndvi-valid">—</strong><em>Cloud-masked pixels</em></div>
-            <div class="kpi"><small>Bare / sparse</small><strong id="ndvi-bare">—</strong><em>NDVI &lt; 0.15</em></div>
+            <div class="kpi"><small>Very sparse</small><strong id="ndvi-bare">—</strong><em>NDVI &lt; 0.15</em></div>
             <div class="kpi"><small>Dense green</small><strong id="ndvi-dense">—</strong><em>NDVI ≥ 0.50</em></div>
           </div>
           <div class="meter"><div class="meter-top"><span>Greenness profile</span><b id="green-meter-label">—</b></div><div class="meter-track"><div class="meter-fill" id="green-meter"></div></div></div>
@@ -95,7 +130,7 @@
           <div class="kpi-grid">
             <div class="kpi"><small>Vegetated</small><strong id="sim-vegetated">—</strong><em>Model cells</em></div>
             <div class="kpi"><small>High desert</small><strong id="sim-desert">—</strong><em>Model cells</em></div>
-            <div class="kpi"><small>Barrier cover</small><strong id="sim-barrier">—</strong><em>Planted scenario</em></div>
+            <div class="kpi"><small>Barrier cover</small><strong id="sim-barrier">—</strong><em>Committed scenario</em></div>
             <div class="kpi"><small>Front cells</small><strong id="sim-front">—</strong><em>Transition zone</em></div>
           </div>
           <div class="meter"><div class="meter-top"><span>Desert pressure</span><b id="desert-meter-label">—</b></div><div class="meter-track"><div class="meter-fill sand" id="desert-meter"></div></div></div>
@@ -104,15 +139,12 @@
 
       <section class="panel">
         <div class="panel-head"><h3>Evidence-based interpretation</h3><span class="source-tag" id="gfw-mode">—</span></div>
-        <div class="panel-body"><div class="insight-list" id="insight-list"><p>Loading interpretation…</p></div></div>
+        <div class="panel-body"><div class="insight-list" id="insight-list"><p>Waiting for the first evidence frame…</p></div></div>
       </section>
     </aside>
   </section>
 </main>
-
-<footer class="footer">
-  NDVI is a spectral greenness indicator, not a direct measure of desertification. Global Forest Watch tree-cover loss does not establish cause. Cellular-automata outputs are scenario experiments and require local field calibration before operational use.
-</footer>
-<script type="module" src="/static/js/twin.js?v=1.0.0"></script>
+<footer class="footer">Satellite greenness, current weather and forest-change data are observations or external evidence. Desert pressure, tree growth and restoration barriers are transparent scenario-model outputs and require local field calibration before operational use.</footer>
+<script type="module" src="/static/js/twin.js?v=2.0.0"></script>
 </body>
 </html>

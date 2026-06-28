@@ -52,6 +52,9 @@ class DesertificationAutomaton:
         self._previous_desert_fraction = 0.0
         self._last_desert_change = 0.0
         self._initial_vegetated_fraction = 0.0
+        self.weather_moisture_forcing = 0.0
+        self.weather_heat_stress = 0.0
+        self.weather_wind_mps = 0.0
         blank = np.zeros((self.height, self.width), dtype=np.float32)
         self.state = AutomatonState(blank.copy(), blank.copy(), blank.copy(), blank.copy(), blank.copy())
         self._texture_png = simulation_to_texture(blank, blank, blank)
@@ -76,12 +79,6 @@ class DesertificationAutomaton:
         desert = np.clip(0.78 - vegetation + north_gradient, 0.02, 0.95)
         moisture = np.clip(0.18 + normalised * 0.65, 0.05, 0.92)
         barrier = np.zeros_like(vegetation)
-        # A sparse demonstration belt gives the simulator something visible before users design a corridor.
-        belt_y = int(self.height * 0.46)
-        belt_x0 = int(self.width * 0.12)
-        belt_x1 = int(self.width * 0.88)
-        barrier[max(0, belt_y - 1):min(self.height, belt_y + 2), belt_x0:belt_x1:3] = 0.56
-        vegetation = np.clip(vegetation + barrier * 0.10, 0.0, 1.0)
         self.state = AutomatonState(vegetation, desert, barrier, moisture, values)
         self.tick = 0
         self._previous_desert_fraction = float(np.mean(desert > 0.60))
@@ -109,6 +106,21 @@ class DesertificationAutomaton:
     def set_parameters(self, parameters: ScenarioParameters) -> None:
         self.parameters = parameters
 
+    def set_weather_forcing(
+        self,
+        temperature_c: float,
+        humidity_percent: float,
+        rainfall_mm: float,
+        wind_speed_mps: float,
+    ) -> None:
+        rainfall_support = np.clip(rainfall_mm / 8.0, 0.0, 1.0)
+        humidity_support = np.clip((humidity_percent - 20.0) / 70.0, 0.0, 1.0)
+        heat_stress = np.clip((temperature_c - 27.0) / 17.0, 0.0, 1.0)
+        wind_stress = np.clip(wind_speed_mps / 14.0, 0.0, 1.0)
+        self.weather_moisture_forcing = float(np.clip(0.68 * rainfall_support + 0.32 * humidity_support, 0.0, 1.0))
+        self.weather_heat_stress = float(np.clip(0.78 * heat_stress + 0.22 * wind_stress, 0.0, 1.0))
+        self.weather_wind_mps = max(0.0, float(wind_speed_mps))
+
     def set_running(self, running: bool) -> None:
         self.running = running
 
@@ -130,7 +142,12 @@ class DesertificationAutomaton:
         neighbour_veg = _neighbour_mean(state.vegetation)
         neighbour_barrier = _neighbour_mean(state.barrier)
 
-        pressure = 0.52 * p.aridity_pressure + 0.30 * p.grazing_pressure + 0.18 * (1.0 - p.rainfall_support)
+        live_dryness = self.weather_heat_stress * 0.18 - self.weather_moisture_forcing * 0.14
+        pressure = np.clip(
+            0.52 * p.aridity_pressure + 0.30 * p.grazing_pressure + 0.18 * (1.0 - p.rainfall_support) + live_dryness,
+            0.0,
+            1.25,
+        )
         barrier_protection = np.clip(state.barrier * 0.78 + neighbour_barrier * 0.42, 0.0, 0.92)
         spread = (
             p.spread_rate
@@ -150,14 +167,14 @@ class DesertificationAutomaton:
 
         growth = (
             p.growth_rate
-            * (0.18 + p.rainfall_support * 0.62 + state.moisture * 0.35)
+            * (0.18 + p.rainfall_support * 0.50 + self.weather_moisture_forcing * 0.18 + state.moisture * 0.35)
             * (0.18 + neighbour_veg)
             * (1.0 - desert_next * 0.72)
             * (1.0 - state.vegetation)
         )
         stress = (
             0.030
-            * (0.42 * p.aridity_pressure + 0.40 * p.grazing_pressure + 0.18 * desert_next)
+            * (0.36 * p.aridity_pressure + 0.34 * p.grazing_pressure + 0.16 * desert_next + 0.14 * self.weather_heat_stress)
             * (0.20 + desert_next)
             * state.vegetation
         )
@@ -180,8 +197,8 @@ class DesertificationAutomaton:
         )
         barrier_next = np.clip(state.barrier + barrier_growth - barrier_loss, 0.0, 1.0)
 
-        moisture_gain = 0.012 * p.rainfall_support + 0.006 * barrier_next
-        moisture_loss = 0.010 * p.aridity_pressure + 0.007 * desert_next
+        moisture_gain = 0.010 * p.rainfall_support + 0.010 * self.weather_moisture_forcing + 0.006 * barrier_next
+        moisture_loss = 0.009 * p.aridity_pressure + 0.006 * desert_next + 0.004 * self.weather_heat_stress
         moisture_next = np.clip(state.moisture + moisture_gain - moisture_loss, 0.0, 1.0)
 
         noise = self.rng.normal(0.0, 0.0018, size=state.desert.shape).astype(np.float32)
@@ -255,6 +272,8 @@ class DesertificationAutomaton:
             desert_front_cells=int(np.count_nonzero(front)),
             restoration_gain=round(current_vegetated - self._initial_vegetated_fraction, 4),
             desert_change=round(self._last_desert_change, 4),
+            weather_moisture_forcing=round(self.weather_moisture_forcing, 4),
+            weather_heat_stress=round(self.weather_heat_stress, 4),
         )
         return metrics
 
@@ -270,11 +289,11 @@ class DesertificationAutomaton:
 
     def _rebuild_trees(self) -> None:
         west, south, east, north = self.settings.aoi_bbox
-        candidates = np.argwhere((self.state.barrier > 0.10) | (self.state.vegetation > 0.68))
+        candidates = np.argwhere((self.state.barrier > 0.10) | (self.state.vegetation > 0.52))
         if candidates.size == 0:
             self._trees = []
             return
-        max_trees = 420
+        max_trees = 360
         stride = max(1, int(np.ceil(len(candidates) / max_trees)))
         selected = candidates[::stride][:max_trees]
         trees: list[TreeInstance] = []
@@ -292,6 +311,11 @@ class DesertificationAutomaton:
                 height_m=round(2.2 + health * 8.6, 2),
                 crown_m=round(1.0 + health * 3.6, 2),
                 barrier=bool(self.state.barrier[row, col] > 0.10),
+                species_form=(
+                    "shelterbelt" if self.state.barrier[row, col] > 0.10
+                    else "shrub" if health < 0.40
+                    else "savanna"
+                ),
             ))
         self._trees = trees
         self.tree_version += 1

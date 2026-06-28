@@ -1,1 +1,1 @@
-"""Northern Gombe Desertification & Afforestation Digital Twin."""
+"""Gombe Desertification & Afforestation Digital Twin."""

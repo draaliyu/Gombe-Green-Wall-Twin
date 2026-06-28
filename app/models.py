@@ -53,6 +53,32 @@ class GFWSnapshot(BaseModel):
     note: str
 
 
+class WeatherSnapshot(BaseModel):
+    mode: SourceMode
+    fetched_at: datetime
+    location_name: str
+    longitude: float
+    latitude: float
+    temperature_c: float
+    feels_like_c: float
+    humidity_percent: float
+    pressure_hpa: float
+    wind_speed_mps: float
+    wind_direction_deg: float
+    wind_direction_cardinal: str
+    wind_gust_mps: float | None = None
+    cloud_cover_percent: float
+    rain_1h_mm: float
+    visibility_km: float | None = None
+    condition: str
+    weather_code: int
+    sunrise: datetime
+    sunset: datetime
+    timezone_offset_seconds: int
+    is_daylight: bool
+    note: str
+
+
 class ScenarioParameters(BaseModel):
     aridity_pressure: float = Field(default=0.58, ge=0.0, le=1.0)
     grazing_pressure: float = Field(default=0.35, ge=0.0, le=1.0)
@@ -74,6 +100,8 @@ class SimulationMetrics(BaseModel):
     desert_front_cells: int
     restoration_gain: float
     desert_change: float
+    weather_moisture_forcing: float = 0.0
+    weather_heat_stress: float = 0.0
 
 
 class TreeInstance(BaseModel):
@@ -84,6 +112,7 @@ class TreeInstance(BaseModel):
     height_m: float
     crown_m: float
     barrier: bool
+    species_form: Literal["savanna", "shelterbelt", "shrub"] = "savanna"
 
 
 class SimulationSnapshot(BaseModel):
@@ -96,7 +125,7 @@ class SimulationSnapshot(BaseModel):
 
 
 class InsightItem(BaseModel):
-    kind: Literal["observation", "external", "simulation", "interpretation", "limitation"]
+    kind: Literal["observation", "external", "simulation", "interpretation", "limitation", "weather"]
     title: str
     body: str
     evidence: list[str] = []
@@ -109,5 +138,6 @@ class TwinFrame(BaseModel):
     source_mode: SourceMode
     satellite: SatelliteSnapshot
     gfw: GFWSnapshot
+    weather: WeatherSnapshot
     simulation: SimulationSnapshot
     insights: list[InsightItem]
