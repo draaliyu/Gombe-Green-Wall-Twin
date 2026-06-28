@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 import logging
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from functools import lru_cache
 from io import BytesIO
 from pathlib import Path
@@ -61,7 +62,7 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 async def frontend_cache_control(request: Request, call_next):
     response = await call_next(request)
     path = request.url.path.lower()
-    if path == "/" or path in PAGES or path.endswith((".js", ".css", ".html")):
+    if path == "/" or path in PAGES or path.startswith("/lga/") or path.endswith((".js", ".css", ".html")):
         response.headers["Cache-Control"] = "no-store, max-age=0"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
@@ -84,6 +85,17 @@ class CorridorRequest(BaseModel):
 class RouteRequest(BaseModel):
     start: tuple[float, float] | None = None
     end: tuple[float, float] | None = None
+
+
+
+
+class LGAScenarioRequest(BaseModel):
+    aridity_pressure: float = Field(default=0.58, ge=0.0, le=1.0)
+    grazing_pressure: float = Field(default=0.35, ge=0.0, le=1.0)
+    rainfall_support: float = Field(default=0.35, ge=0.0, le=1.0)
+    restoration_effort: float = Field(default=0.45, ge=0.0, le=1.0)
+    barrier_maintenance: float = Field(default=0.70, ge=0.0, le=1.0)
+    steps: int = Field(default=36, ge=6, le=120)
 
 
 class AdminLoginRequest(BaseModel):
@@ -167,6 +179,15 @@ for route, filename in PAGES.items():
     app.add_api_route(route, page, methods=["GET"], include_in_schema=False)
 
 
+@app.get("/lga/{slug}", include_in_schema=False)
+async def lga_twin_page(slug: str) -> FileResponse:
+    try:
+        runtime.lga_twins.feature(slug)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+    return FileResponse(STATIC_DIR / "lga-twin.html")
+
+
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon() -> FileResponse:
     return FileResponse(STATIC_DIR / "favicon.svg", media_type="image/svg+xml")
@@ -194,7 +215,7 @@ async def health() -> dict[str, object]:
         "services": [
             "live twin", "temporal change", "drought", "land cover", "Sentinel-1 radar",
             "restoration suitability", "route optimisation", "carbon", "risk", "field registry",
-            "project registry", "scenario comparison", "explainable prediction",
+            "project registry", "scenario comparison", "explainable prediction", "eleven LGA digital twins",
         ],
     }
 
@@ -235,6 +256,76 @@ async def area(slug: str) -> dict:
         return await runtime.area_profile(slug)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+
+
+# ---- Version 5 LGA digital-twin microservices ---------------------------------------
+
+@app.get("/api/lga-twins")
+async def lga_twin_catalogue() -> list[dict]:
+    return await runtime.lga_twins.catalogue()
+
+
+@app.get("/api/lga-twins/{slug}/snapshot")
+async def lga_twin_snapshot(slug: str) -> dict:
+    try:
+        return await runtime.lga_twins.snapshot(slug)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+
+
+@app.get("/api/lga-twins/{slug}/boundary")
+async def lga_twin_boundary(slug: str) -> dict:
+    try:
+        return await runtime.lga_twins.boundary(slug)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+
+
+@app.get("/api/lga-twins/{slug}/textures/{layer}.png")
+async def lga_twin_texture(slug: str, layer: str) -> Response:
+    if layer not in {"ndvi", "simulation", "landcover", "suitability", "risk"}:
+        raise HTTPException(status_code=404, detail="Unknown LGA texture layer")
+    try:
+        content, version = await runtime.lga_twins.texture(slug, layer)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+    return Response(content, media_type="image/png", headers={"Cache-Control": "no-store", "ETag": f'"lga-{slug}-{layer}-{version}"'})
+
+
+@app.post("/api/lga-twins/{slug}/scenario")
+async def lga_twin_scenario(slug: str, request: LGAScenarioRequest) -> dict:
+    try:
+        return await runtime.lga_twins.scenario(slug, request.model_dump())
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+
+
+@app.get("/api/lga-twins/{slug}/projects")
+async def lga_twin_projects(slug: str) -> list[dict]:
+    try:
+        snapshot = await runtime.lga_twins.snapshot(slug)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+    return snapshot["projects"]
+
+
+@app.get("/api/lga-twins/{slug}/field-observations")
+async def lga_twin_field_observations(slug: str) -> list[dict]:
+    try:
+        snapshot = await runtime.lga_twins.snapshot(slug)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+    return snapshot["field_observations"]
+
+
+@app.post("/api/admin/lga-twins/{slug}/refresh-satellite")
+async def refresh_lga_satellite(slug: str, authorization: str | None = Header(default=None)) -> dict:
+    _require_admin(authorization)
+    try:
+        data = await runtime.lga_twins.satellite(slug, force=True)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Unknown Gombe LGA") from exc
+    return data.snapshot.model_dump(mode="json")
 
 
 @app.get("/api/weather")
@@ -570,6 +661,27 @@ async def methodology() -> dict[str, object]:
             "persistence": "SQLite storage is local; Render Free filesystems are ephemeral across restarts and redeploys.",
         },
     }
+
+
+@app.websocket("/ws/lga/{slug}")
+async def lga_live_socket(websocket: WebSocket, slug: str) -> None:
+    try:
+        runtime.lga_twins.feature(slug)
+    except KeyError:
+        await websocket.close(code=1008, reason="Unknown Gombe LGA")
+        return
+    await websocket.accept()
+    try:
+        while True:
+            payload = await runtime.lga_twins.snapshot(slug)
+            await websocket.send_json(payload)
+            await asyncio.sleep(max(3.0, settings.broadcast_interval_seconds * 3.0))
+    except WebSocketDisconnect:
+        pass
+    except Exception as exc:  # noqa: BLE001
+        LOGGER.debug("LGA WebSocket closed: %s", exc)
+        with suppress(Exception):
+            await websocket.close()
 
 
 @app.websocket("/ws/live")

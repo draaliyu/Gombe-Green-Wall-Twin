@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LGA Digital Twin | Gombe Desertification & Afforestation Intelligence Twin</title>
+  <meta name="description" content="A dedicated live environmental and restoration digital twin for each Gombe State local government area.">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/css/styles.css?v=5.0.0">
+  <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+</head>
+<body class="lga-twin-body">
+<header class="app-header lga-header">
+  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Local Government Digital Twin</span><h1 id="lga-header-title">Loading LGA Twin</h1></span></a>
+  <nav class="nav" aria-label="Primary services">
+    <a href="/" data-nav="twin">State Twin</a><a href="/areas" data-nav="areas">All LGAs</a><a href="/weather">Weather</a><a href="/timeline">Timeline</a><a href="/restoration">Restoration</a><a href="/field">Field</a><a href="/services">Services</a>
+  </nav>
+  <div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span></div>
+</header>
+
+<main class="lga-twin-page">
+  <section class="lga-command-bar" aria-label="LGA twin selector and view controls">
+    <label class="lga-picker"><span>Local government twin</span><select id="lga-select" aria-label="Select local government"></select></label>
+    <div class="lga-command-actions">
+      <button class="btn" id="lga-prev" type="button">← Previous</button>
+      <button class="btn" id="lga-next" type="button">Next →</button>
+      <button class="btn" id="lga-refresh" type="button">Refresh evidence</button>
+      <a class="btn" href="/areas">Twin directory</a>
+    </div>
+    <span class="live-time" id="lga-updated">Connecting to local twin…</span>
+  </section>
+
+  <section class="lga-hero-grid">
+    <aside class="lga-left-rail">
+      <section class="cc-panel weather-local-panel">
+        <div class="cc-panel-head"><h2>Weather now</h2><span class="source-tag" id="lga-weather-mode">—</span></div>
+        <div class="cc-panel-body">
+          <div class="weather-hero"><strong id="lga-temperature">—</strong><span id="lga-condition">Loading</span></div>
+          <div class="mini-metric-grid">
+            <div><small>Humidity</small><b id="lga-humidity">—</b></div><div><small>Wind</small><b id="lga-wind">—</b></div>
+            <div><small>Pressure</small><b id="lga-pressure">—</b></div><div><small>Rain</small><b id="lga-rain">—</b></div>
+            <div><small>Clouds</small><b id="lga-clouds">—</b></div><div><small>Visibility</small><b id="lga-visibility">—</b></div>
+          </div>
+        </div>
+      </section>
+      <section class="cc-panel">
+        <div class="cc-panel-head"><h2>Satellite vegetation</h2><span class="source-tag" id="lga-satellite-mode">—</span></div>
+        <div class="cc-panel-body">
+          <div class="large-kpi"><span>Mean NDVI</span><strong id="lga-ndvi">—</strong><em id="lga-ndvi-class">Loading evidence</em></div>
+          <div class="meter-row"><span>Valid pixels</span><b id="lga-valid">—</b></div><div class="meter-track"><div class="meter-fill" id="lga-valid-bar"></div></div>
+          <div class="meter-row"><span>Dense vegetation</span><b id="lga-dense">—</b></div><div class="meter-track"><div class="meter-fill" id="lga-dense-bar"></div></div>
+          <div class="meter-row"><span>Bare/sparse signal</span><b id="lga-bare">—</b></div><div class="meter-track"><div class="meter-fill sand" id="lga-bare-bar"></div></div>
+        </div>
+      </section>
+      <section class="cc-panel">
+        <div class="cc-panel-head"><h2>Local status</h2><span class="source-tag">LIVE + MODEL</span></div>
+        <div class="cc-panel-body status-rows">
+          <div><span>Vegetated cells</span><b id="lga-vegetated">—</b></div>
+          <div><span>Desert pressure</span><b id="lga-desert">—</b></div>
+          <div><span>Suitability</span><b id="lga-suitability">—</b></div>
+          <div><span>Combined risk</span><b id="lga-risk">—</b></div>
+          <div><span>Procedural trees</span><b id="lga-tree-count">—</b></div>
+          <div><span>Local area</span><b id="lga-area">—</b></div>
+        </div>
+      </section>
+    </aside>
+
+    <section class="lga-visual-stage" id="lga-map-shell">
+      <div class="map" id="lga-map" aria-label="Interactive local government digital twin map"></div>
+      <div id="lga-sky-layer" class="lga-sky-layer" aria-hidden="true"></div>
+      <div class="lga-map-title">
+        <span class="eyebrow" id="lga-scope">LGA digital twin</span>
+        <h2 id="lga-name">Loading…</h2>
+        <p id="lga-map-summary">Loading local satellite, weather, restoration and risk evidence.</p>
+      </div>
+      <div class="lga-layer-panel" aria-label="Environmental layers">
+        <button class="layer-chip active" data-layer="ndvi">NDVI</button>
+        <button class="layer-chip" data-layer="simulation">Land state</button>
+        <button class="layer-chip" data-layer="landcover">Land cover</button>
+        <button class="layer-chip" data-layer="suitability">Suitability</button>
+        <button class="layer-chip" data-layer="risk">Risk</button>
+      </div>
+      <div class="lga-view-controls">
+        <button class="control-btn active" id="lga-orbit"><span class="icon">↻</span>Orbit</button>
+        <button class="control-btn" id="lga-3d"><span class="icon">▰</span>3D</button>
+        <button class="control-btn" id="lga-ground"><span class="icon">♙</span>Ground</button>
+        <button class="control-btn" id="lga-reset"><span class="icon">⌖</span>Reset</button>
+        <button class="control-btn" id="lga-full"><span class="icon">⛶</span>Full</button>
+      </div>
+      <div class="lga-live-badge"><span class="status-dot"></span><span id="lga-live-frame">LOCAL LIVE SERVICE</span></div>
+    </section>
+
+    <aside class="lga-right-rail">
+      <section class="cc-panel">
+        <div class="cc-panel-head"><h2>Alerts & events</h2><span class="source-tag" id="lga-alert-count">0</span></div>
+        <div class="cc-panel-body"><div class="lga-alerts" id="lga-alerts"></div></div>
+      </section>
+      <section class="cc-panel">
+        <div class="cc-panel-head"><h2>Land cover</h2><span class="source-tag">SCREENING</span></div>
+        <div class="cc-panel-body"><div class="landcover-list" id="lga-landcover"></div></div>
+      </section>
+      <section class="cc-panel">
+        <div class="cc-panel-head"><h2>Restoration registry</h2><span class="source-tag" id="lga-project-count">0</span></div>
+        <div class="cc-panel-body">
+          <div class="registry-summary"><div><small>Projects</small><strong id="lga-projects">0</strong></div><div><small>Field records</small><strong id="lga-field">0</strong></div><div><small>Thermal context</small><strong id="lga-hotspots">0</strong></div></div>
+          <div id="lga-project-list" class="compact-list"></div>
+        </div>
+      </section>
+    </aside>
+  </section>
+
+  <section class="lga-intelligence-grid">
+    <article class="cc-panel lga-chart-card"><div class="cc-panel-head"><h2>Vegetation and desertification timeline</h2><span class="source-tag" id="lga-timeline-mode">—</span></div><div class="cc-panel-body"><canvas id="lga-timeline-chart" class="chart-canvas"></canvas></div></article>
+    <article class="cc-panel lga-chart-card"><div class="cc-panel-head"><h2>Next weather periods</h2><span class="source-tag">PROVIDER FORECAST</span></div><div class="cc-panel-body"><canvas id="lga-forecast-chart" class="chart-canvas"></canvas></div></article>
+    <article class="cc-panel lga-chart-card"><div class="cc-panel-head"><h2>Carbon & ecosystem services</h2><span class="source-tag">SCREENING</span></div><div class="cc-panel-body"><div class="ecosystem-radar" id="lga-ecosystems"></div></div></article>
+  </section>
+
+  <section class="lga-detail-grid">
+    <article class="cc-panel">
+      <div class="cc-panel-head"><h2>What the evidence indicates</h2><span class="source-tag">EXPLAINED</span></div>
+      <div class="cc-panel-body"><div class="insight-list" id="lga-interpretations"></div></div>
+    </article>
+    <article class="cc-panel local-scenario-panel">
+      <div class="cc-panel-head"><h2>Local scenario laboratory</h2><span class="source-tag">EXPERIMENT</span></div>
+      <div class="cc-panel-body">
+        <div class="slider-group compact-sliders">
+          <div class="slider-row"><label for="local-aridity">Aridity pressure</label><input id="local-aridity" type="range" min="0" max="1" step="0.01" value="0.58"><output>0.58</output></div>
+          <div class="slider-row"><label for="local-grazing">Grazing pressure</label><input id="local-grazing" type="range" min="0" max="1" step="0.01" value="0.35"><output>0.35</output></div>
+          <div class="slider-row"><label for="local-rainfall">Rainfall support</label><input id="local-rainfall" type="range" min="0" max="1" step="0.01" value="0.35"><output>0.35</output></div>
+          <div class="slider-row"><label for="local-restoration">Restoration effort</label><input id="local-restoration" type="range" min="0" max="1" step="0.01" value="0.45"><output>0.45</output></div>
+          <div class="slider-row"><label for="local-maintenance">Barrier maintenance</label><input id="local-maintenance" type="range" min="0" max="1" step="0.01" value="0.70"><output>0.70</output></div>
+        </div>
+        <div class="btn-row"><button class="btn" id="local-run-scenario" type="button">Run local scenario</button><span class="scenario-note" id="local-scenario-result">No experiment run yet.</span></div>
+        <canvas id="local-scenario-chart" class="chart-canvas"></canvas>
+      </div>
+    </article>
+  </section>
+
+  <section class="cc-panel provenance-panel">
+    <div class="cc-panel-head"><h2>Local source provenance and limitations</h2><span class="source-tag" id="lga-source-mode">—</span></div>
+    <div class="cc-panel-body provenance-layout"><div id="lga-provenance" class="provenance-list"></div><div id="lga-limitations" class="limitations-list"></div></div>
+  </section>
+</main>
+<footer class="footer">Each LGA twin has a dedicated route and API namespace. Observations, external context and scenario-derived values are labelled separately; local decisions still require field verification and community engagement.</footer>
+<script type="module" src="/static/js/lga-twin.js?v=5.0.0"></script>
+</body>
+</html>

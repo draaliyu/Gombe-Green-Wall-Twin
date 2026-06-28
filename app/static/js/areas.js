@@ -27,12 +27,19 @@ function renderList() {
   if (!container) return;
   container.innerHTML = "";
   areas.forEach((area) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `area-button ${activeSlug === area.slug ? "active" : ""}`;
-    button.innerHTML = `<strong>${area.name}</strong><span>${area.northern_focus ? "Northern focus" : "State context"}</span>`;
-    button.addEventListener("click", () => selectArea(area.slug));
-    container.appendChild(button);
+    const item = document.createElement("div");
+    item.className = `area-button ${activeSlug === area.slug ? "active" : ""}`;
+    const select = document.createElement("button");
+    select.type = "button";
+    select.className = "area-select-button";
+    select.innerHTML = `<strong>${area.name}</strong><span>${area.northern_focus ? "Northern focus" : "State context"}</span>`;
+    select.addEventListener("click", () => selectArea(area.slug));
+    const twin = document.createElement("a");
+    twin.className = "lga-twin-link";
+    twin.href = `/lga/${area.slug}`;
+    twin.textContent = "Open twin";
+    item.append(select, twin);
+    container.appendChild(item);
   });
   setText("areas-count", `${areas.length} LGAs`);
 }
@@ -54,7 +61,7 @@ async function selectArea(slug) {
     setText("selected-desert", profile.simulation.desert_fraction == null ? "Outside model grid" : formatPercent(profile.simulation.desert_fraction));
     setText("selected-barrier", profile.simulation.barrier_fraction == null ? "Outside model grid" : formatPercent(profile.simulation.barrier_fraction, 2));
     const interpretation = document.getElementById("selected-interpretation");
-    if (interpretation) interpretation.innerHTML = profile.interpretation.map((item) => `<article><h4>${item.title}</h4><p>${item.body}</p></article>`).join("");
+    if (interpretation) interpretation.innerHTML = profile.interpretation.map((item) => `<article><h4>${item.title}</h4><p>${item.body}</p></article>`).join("") + `<a class="btn" href="/lga/${profile.slug}">Open ${profile.name} dedicated digital twin</a>`;
     map.easeTo({ center: [profile.centroid.longitude, profile.centroid.latitude], zoom: profile.northern_focus ? 9 : 8.5, pitch: 34, duration: 850 });
   } catch (error) {
     showToast(`Could not load area evidence: ${error.message}`);

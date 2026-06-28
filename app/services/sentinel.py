@@ -235,6 +235,118 @@ class SentinelNDVIService:
             )
             return SatelliteData(snapshot, ndvi, valid, ndvi_to_texture(ndvi, valid))
 
+
+    async def fetch_bbox_data(
+        self,
+        bbox: tuple[float, float, float, float],
+        label: str,
+        width: int = 72,
+        height: int = 72,
+    ) -> SatelliteData:
+        """Fetch a compact Sentinel-2 NDVI mosaic for one LGA.
+
+        The method is used by the LGA-twin service so every local government can
+        have a scoped satellite view even when the main simulation grid covers
+        only northern Gombe. Results are cached by the caller.
+        """
+        end = datetime.now(timezone.utc)
+        start = end - timedelta(days=self.settings.sentinel_lookback_days)
+        if not self.settings.has_copernicus_credentials:
+            import hashlib
+            seed = self.settings.random_seed + int(hashlib.sha256(label.encode("utf-8")).hexdigest()[:8], 16)
+            ndvi, valid = generate_demo_ndvi(width, height, seed, end)
+            self._texture_version += 1
+            snapshot = SatelliteSnapshot(
+                mode="demo",
+                fetched_at=end,
+                observation_window_start=start,
+                observation_window_end=end,
+                grid_width=width,
+                grid_height=height,
+                cloud_limit_percent=self.settings.sentinel_max_cloud_percent,
+                stats=calculate_stats(ndvi, valid),
+                source_name=f"Deterministic demonstration surface for {label}",
+                note=(
+                    "Copernicus credentials are not configured. This LGA-specific raster is a deterministic "
+                    "demonstration and is not a satellite observation."
+                ),
+                texture_version=self._texture_version,
+            )
+            return SatelliteData(snapshot, ndvi, valid, ndvi_to_texture(ndvi, valid, width=720, height=720))
+
+        token = await self._get_token()
+        west, south, east, north = bbox
+        payload: dict[str, Any] = {
+            "input": {
+                "bounds": {
+                    "bbox": [west, south, east, north],
+                    "properties": {"crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"},
+                },
+                "data": [{
+                    "type": "sentinel-2-l2a",
+                    "dataFilter": {
+                        "timeRange": {
+                            "from": start.isoformat().replace("+00:00", "Z"),
+                            "to": end.isoformat().replace("+00:00", "Z"),
+                        },
+                        "maxCloudCoverage": self.settings.sentinel_max_cloud_percent,
+                        "mosaickingOrder": "leastCC",
+                    },
+                }],
+            },
+            "output": {
+                "width": width,
+                "height": height,
+                "responses": [{"identifier": "default", "format": {"type": "image/tiff"}}],
+            },
+            "evalscript": NDVI_EVALSCRIPT,
+        }
+        response = await self.client.post(
+            self.settings.copernicus_process_url,
+            json=payload,
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=120.0,
+        )
+        if response.status_code == 404 and "/process/v1" in self.settings.copernicus_process_url:
+            response = await self.client.post(
+                self.settings.copernicus_process_url.replace("/process/v1", "/api/v1/process"),
+                json=payload,
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=120.0,
+            )
+        response.raise_for_status()
+        array = tifffile.imread(BytesIO(response.content))
+        if array.ndim == 3 and array.shape[-1] >= 2:
+            ndvi = array[..., 0].astype(np.float32)
+            valid = array[..., 1] > 0.5
+        elif array.ndim == 3 and array.shape[0] >= 2:
+            ndvi = array[0].astype(np.float32)
+            valid = array[1] > 0.5
+        else:
+            raise ValueError(f"Unexpected Sentinel-2 TIFF shape: {array.shape}")
+        valid &= np.isfinite(ndvi) & (ndvi > -2.0) & (ndvi <= 1.0)
+        ndvi = np.clip(ndvi, -1.0, 1.0)
+        if np.count_nonzero(valid) < max(30, int(ndvi.size * 0.025)):
+            raise ValueError(f"Sentinel-2 returned too few cloud-free pixels for {label}")
+        self._texture_version += 1
+        snapshot = SatelliteSnapshot(
+            mode="live",
+            fetched_at=end,
+            observation_window_start=start,
+            observation_window_end=end,
+            grid_width=width,
+            grid_height=height,
+            cloud_limit_percent=self.settings.sentinel_max_cloud_percent,
+            stats=calculate_stats(ndvi, valid),
+            source_name=f"Copernicus Sentinel-2 L2A — {label}",
+            note=(
+                "LGA-scoped NDVI calculated from cloud-masked Sentinel-2 L2A red and near-infrared reflectance. "
+                "The mosaic uses the least-cloudy observations in the displayed window."
+            ),
+            texture_version=self._texture_version,
+        )
+        return SatelliteData(snapshot, ndvi, valid, ndvi_to_texture(ndvi, valid, width=720, height=720))
+
     async def fetch_window_statistics(
         self,
         start: datetime,

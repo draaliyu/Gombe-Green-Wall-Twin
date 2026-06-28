@@ -1,6 +1,6 @@
 import {
   AOI, createMap, fetchJson, fitNorth, fitState, LiveSocket, updateConnection, formatPercent, formatNumber, showToast,
-} from "./common.js?v=4.0.0";
+} from "./common.js?v=5.0.0";
 
 const page = document.body.dataset.page || "services";
 const $ = (id) => document.getElementById(id);
@@ -153,6 +153,7 @@ async function adminFetch(url, options = {}) {
 }
 
 const services = [
+  ["◎", "Eleven LGA Digital Twins", "/areas", "Open a dedicated live twin for every Gombe local government area."],
   ["◷", "Temporal Change", "/timeline", "Replay greenness, rainfall and scenario change through time."],
   ["☂", "Rainfall & Drought", "/drought", "Dry spells, anomalies, water balance and rainy-season onset."],
   ["▦", "Land Cover", "/landcover", "Nine-class cover probabilities with source confidence."],

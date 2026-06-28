@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Field Verification | Gombe Green Wall Twin</title><meta name="description" content="Authorised users can submit tree counts, survival, species, condition and photographs. Public users can see verification status without receiving administrator credentials.">
-<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=4.0.0">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=5.0.0">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
-<link rel="stylesheet" href="/static/css/styles.css?v=4.0.0">
+<link rel="stylesheet" href="/static/css/styles.css?v=5.0.0">
 <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 </head>
 <body class="intelligence-body" data-page="field">
@@ -16,5 +16,5 @@
 <main class="page v4-page"><section class="hero-copy v4-hero"><div><span class="eyebrow">Ground-truth observation service</span><h2>Record and review geotagged evidence from restoration sites.</h2><p>Authorised users can submit tree counts, survival, species, condition and photographs. Public users can see verification status without receiving administrator credentials.</p></div><span class="live-time" data-live-time>Connecting…</span></section>
 <section class="v4-grid"><article class="intel-card span-2"><header><h3>Observation map</h3><span id="field-count">0 records</span></header><div class="map field-map" id="field-map"></div></article><article class="intel-card"><header><h3>Administrator access</h3></header><form id="admin-login-form" class="stack-form"><input id="admin-password" type="password" placeholder="Administrator password" autocomplete="current-password"><button>Sign in</button><span id="admin-status">Protected writes are disabled until login.</span></form><hr><form id="field-form" class="stack-form"><input id="field-observer" placeholder="Observer name" required><input id="field-lga" placeholder="LGA"><select id="field-type"><option>tree-survival</option><option>vegetation-condition</option><option>grazing-damage</option><option>fire-evidence</option><option>soil-condition</option></select><div class="form-row"><input id="field-lat" type="number" step="any" placeholder="Latitude" required><input id="field-lon" type="number" step="any" placeholder="Longitude" required></div><div class="form-row"><input id="field-trees" type="number" min="0" placeholder="Tree count"><input id="field-survival" type="number" min="0" max="100" placeholder="Survival %"></div><input id="field-species" placeholder="Species"><textarea id="field-notes" placeholder="Notes"></textarea><button type="submit">Submit protected observation</button></form></article><article class="intel-card span-3"><header><h3>Recent field evidence</h3></header><div id="field-records" class="record-table"></div></article></section></main>
 <footer class="footer v4-footer">Gombe Desertification & Afforestation Intelligence Twin • Observed, derived, modelled and scenario evidence are labelled separately.</footer>
-<script type="module" src="/static/js/intelligence.js?v=4.0.0"></script>
+<script type="module" src="/static/js/intelligence.js?v=5.0.0"></script>
 </body></html>

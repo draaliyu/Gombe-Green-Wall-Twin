@@ -39,7 +39,7 @@ class TwinRuntime:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.client = httpx.AsyncClient(
-            headers={"User-Agent": "Gombe-Green-Wall-Twin/3.0"},
+            headers={"User-Agent": "Gombe-Green-Wall-Twin/5.0"},
             follow_redirects=True,
         )
         self.sentinel = SentinelNDVIService(settings, self.client)

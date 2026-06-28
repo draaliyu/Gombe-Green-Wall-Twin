@@ -55,7 +55,7 @@ export function updateSourceBadge(id, mode) {
 
 export function currentPage() {
   const path = window.location.pathname;
-  if (path.startsWith("/areas")) return "areas";
+  if (path.startsWith("/areas") || path.startsWith("/lga/")) return "areas";
   if (path.startsWith("/weather")) return "weather";
   if (path.startsWith("/satellite")) return "satellite";
   if (path.startsWith("/simulation")) return "simulation";

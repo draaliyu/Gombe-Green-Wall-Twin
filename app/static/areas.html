@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Gombe LGA Explorer | Desertification & Afforestation Twin</title>
+  <title>Gombe LGA Twin Directory | Desertification & Afforestation Twin</title>
   <meta name="description" content="Explore all Gombe State LGAs and inspect northern Gombe vegetation, weather, desert-pressure and restoration evidence.">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
-  <link rel="stylesheet" href="/static/css/styles.css?v=4.0.0">
+  <link rel="stylesheet" href="/static/css/styles.css?v=5.0.0">
   <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 </head>
 <body>
 <header class="app-header">
-  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Area Evidence Service</span><h1>Gombe LGA Explorer</h1></span></a>
+  <a class="brand" href="/"><span class="brand-mark"></span><span><span class="eyebrow">Area Evidence Service</span><h1>Gombe LGA Twin Directory</h1></span></a>
   <nav class="nav" aria-label="Primary services">
-    <a href="/" data-nav="twin">Live Twin</a><a href="/areas" data-nav="areas">LGA Explorer</a><a href="/weather" data-nav="weather">Weather & Sky</a><a href="/satellite" data-nav="satellite">Satellite NDVI</a><a href="/simulation" data-nav="simulation">Simulation Lab</a><a href="/planner" data-nav="planner">Green Wall Planner</a><a href="/evidence" data-nav="evidence">Evidence</a><a href="/services" data-nav="services">Intelligence</a>
+    <a href="/" data-nav="twin">Live Twin</a><a href="/areas" data-nav="areas">LGA Twins</a><a href="/weather" data-nav="weather">Weather & Sky</a><a href="/satellite" data-nav="satellite">Satellite NDVI</a><a href="/simulation" data-nav="simulation">Simulation Lab</a><a href="/planner" data-nav="planner">Green Wall Planner</a><a href="/evidence" data-nav="evidence">Evidence</a><a href="/services" data-nav="services">Intelligence</a>
   </nav>
   <div class="header-status"><span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span></div>
 </header>
 <main class="page">
   <section class="hero-copy">
-    <div><span class="eyebrow">All eleven LGAs • five northern-focus LGAs</span><h2>Select an LGA to see what the satellite, weather and simulation currently indicate.</h2><p>Observed, modelled and contextual evidence are kept separate. The northern focus consists of Dukku, Funakaye, Gombe, Kwami and Nafada.</p></div>
+    <div><span class="eyebrow">All eleven LGAs • five northern-focus LGAs</span><h2>Select an LGA, inspect the summary, or open its dedicated live digital twin.</h2><p>Observed, modelled and contextual evidence are kept separate. The northern focus consists of Dukku, Funakaye, Gombe, Kwami and Nafada.</p></div>
     <span class="live-time" id="areas-last-updated">Connecting to live state…</span>
   </section>
 
@@ -62,6 +62,6 @@
   </section>
 </main>
 <footer class="footer">LGA summaries aggregate available pixels and model cells inside each boundary. Weather is queried at the LGA centroid. Values labelled demo are not observations.</footer>
-<script type="module" src="/static/js/areas.js?v=4.0.0"></script>
+<script type="module" src="/static/js/areas.js?v=5.0.0"></script>
 </body>
 </html>

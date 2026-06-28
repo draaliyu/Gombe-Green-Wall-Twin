@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "Gombe Desertification & Afforestation Intelligence Twin"
-    app_version: str = "4.0.0"
+    app_version: str = "5.0.0"
     debug: bool = False
     enable_demo_data: bool = True
 

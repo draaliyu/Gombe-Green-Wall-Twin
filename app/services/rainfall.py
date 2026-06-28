@@ -23,13 +23,14 @@ class RainfallDroughtService:
     def __init__(self, settings: Settings, client: httpx.AsyncClient) -> None:
         self.settings = settings
         self.client = client
-        self._cache: dict[str, Any] | None = None
-        self._cached_at = datetime.min.replace(tzinfo=timezone.utc)
+        self._cache: dict[tuple[float, float], tuple[datetime, dict[str, Any]]] = {}
 
     async def fetch(self, longitude: float, latitude: float) -> dict[str, Any]:
         now = datetime.now(timezone.utc)
-        if self._cache and (now - self._cached_at).total_seconds() < self.settings.rainfall_refresh_seconds:
-            return self._cache
+        cache_key = (round(float(longitude), 2), round(float(latitude), 2))
+        cached = self._cache.get(cache_key)
+        if cached and (now - cached[0]).total_seconds() < self.settings.rainfall_refresh_seconds:
+            return cached[1]
         end = date.today() - timedelta(days=2)
         start = end - timedelta(days=self.settings.rainfall_history_days - 1)
         try:
@@ -57,8 +58,7 @@ class RainfallDroughtService:
                 result = self._unavailable(str(exc))
             else:
                 result = self._demo(longitude, latitude, start, end, type(exc).__name__)
-        self._cache = result
-        self._cached_at = now
+        self._cache[cache_key] = (now, result)
         return result
 
     def _summarise(self, payload: dict[str, Any], mode: str, source: str) -> dict[str, Any]:

@@ -41,7 +41,7 @@ def test_weather_forecast_and_tile_routes_are_registered() -> None:
     assert "/api/weather/tiles/{layer}/{z}/{x}/{y}.png" in paths
 
 
-def test_asset_cache_version_is_v4() -> None:
+def test_asset_cache_version_is_v5() -> None:
     page = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert "styles.css?v=4.0.0" in page
-    assert "twin.js?v=4.0.0" in page
+    assert "styles.css?v=5.0.0" in page
+    assert "twin.js?v=5.0.0" in page

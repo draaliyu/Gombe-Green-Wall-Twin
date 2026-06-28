@@ -13,6 +13,7 @@ from app.config import Settings
 from app.services.enhanced_types import normalise_external_landcover
 from app.services.fires import FIRMSService
 from app.services.intelligence import IntelligenceEngine
+from app.services.lga_twins import LGATwinService
 from app.services.prediction import PredictionService
 from app.services.radar import Sentinel1RadarService
 from app.services.rainfall import RainfallDroughtService
@@ -44,6 +45,7 @@ class EnhancedTwinRuntime(TwinRuntime):
         self._latest_landcover: dict[str, Any] | None = None
         self._latest_suitability: dict[str, Any] | None = None
         self._latest_risks: dict[str, Any] | None = None
+        self.lga_twins = LGATwinService(self)
 
     async def start(self) -> None:
         await super().start()

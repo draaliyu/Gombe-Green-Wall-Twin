@@ -354,6 +354,8 @@ async function openArea(slug) {
     setText("area-barrier", selectedArea.simulation.barrier_fraction == null ? "Outside northern model grid" : formatPercent(selectedArea.simulation.barrier_fraction, 2));
     const interpretations = document.getElementById("area-interpretations");
     interpretations.innerHTML = selectedArea.interpretation.map((item) => `<article><h4>${item.title}</h4><p>${item.body}</p></article>`).join("");
+    const openTwin = document.getElementById("area-open-twin");
+    if (openTwin) { openTwin.href = `/lga/${selectedArea.slug}`; openTwin.textContent = `Open ${selectedArea.name} digital twin`; }
     const { longitude, latitude } = selectedArea.centroid;
     orbitTargetMode = 2;
     map.easeTo({ center: [longitude, latitude], zoom: 9.0, pitch: 56, duration: 850 });
