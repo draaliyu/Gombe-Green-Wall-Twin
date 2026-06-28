@@ -161,7 +161,7 @@ export async function addAdministrativeLayers(map) {
     });
     map.addLayer({
       id: "lga-labels", type: "symbol", source: "lga-centres",
-      layout: { "text-field": ["get", "name"], "text-size": ["case", ["get", "northern_focus"], 12, 10], "text-font": ["Noto Sans Bold"], "text-offset": [0, 1.15], "text-anchor": "top", "text-allow-overlap": false },
+      layout: { "text-field": ["get", "name"], "text-size": ["case", ["get", "northern_focus"], 12.5, 10.5], "text-font": ["Noto Sans Bold"], "text-offset": [0, 1.15], "text-anchor": "top", "text-allow-overlap": true, "text-ignore-placement": false },
       paint: { "text-color": ["case", ["get", "northern_focus"], "#f6fff3", "#c1d3ca"], "text-halo-color": "#05100f", "text-halo-width": 2.4 },
     });
   }

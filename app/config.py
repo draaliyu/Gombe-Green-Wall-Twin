@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "Gombe Desertification & Afforestation Digital Twin"
-    app_version: str = "2.0.0"
+    app_version: str = "3.0.0"
     debug: bool = False
 
     copernicus_client_id: str = ""
@@ -63,6 +63,8 @@ class Settings(BaseSettings):
 
     openweather_api_key: str = ""
     openweather_current_url: str = "https://api.openweathermap.org/data/2.5/weather"
+    openweather_forecast_url: str = "https://api.openweathermap.org/data/2.5/forecast"
+    openweather_tile_url: str = "https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png"
     weather_refresh_seconds: int = Field(default=300, ge=60)
     weather_cache_seconds: int = Field(default=240, ge=30)
 

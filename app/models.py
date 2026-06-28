@@ -79,6 +79,32 @@ class WeatherSnapshot(BaseModel):
     note: str
 
 
+class WeatherForecastPoint(BaseModel):
+    timestamp: datetime
+    temperature_c: float
+    feels_like_c: float
+    humidity_percent: float
+    pressure_hpa: float
+    wind_speed_mps: float
+    wind_direction_deg: float
+    wind_direction_cardinal: str
+    cloud_cover_percent: float
+    precipitation_probability: float
+    rain_3h_mm: float
+    condition: str
+    weather_code: int
+
+
+class WeatherForecastSnapshot(BaseModel):
+    mode: SourceMode
+    fetched_at: datetime
+    location_name: str
+    longitude: float
+    latitude: float
+    points: list[WeatherForecastPoint]
+    note: str
+
+
 class ScenarioParameters(BaseModel):
     aridity_pressure: float = Field(default=0.58, ge=0.0, le=1.0)
     grazing_pressure: float = Field(default=0.35, ge=0.0, le=1.0)
@@ -139,5 +165,6 @@ class TwinFrame(BaseModel):
     satellite: SatelliteSnapshot
     gfw: GFWSnapshot
     weather: WeatherSnapshot
+    weather_forecast: WeatherForecastSnapshot
     simulation: SimulationSnapshot
     insights: list[InsightItem]

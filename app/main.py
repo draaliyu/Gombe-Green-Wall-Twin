@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
+from functools import lru_cache
+from io import BytesIO
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, JSONResponse, Response
+from PIL import Image
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -21,6 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 settings = get_settings()
 runtime = TwinRuntime(settings)
+
+
+@lru_cache(maxsize=1)
+def _transparent_weather_tile() -> bytes:
+    image = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
+    buffer = BytesIO()
+    image.save(buffer, format="PNG", optimize=True)
+    return buffer.getvalue()
 
 
 @asynccontextmanager
@@ -43,6 +54,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.middleware("http")
+async def frontend_cache_control(request: Request, call_next):
+    response = await call_next(request)
+    path = request.url.path.lower()
+    if path == "/" or path in {"/areas", "/weather", "/satellite", "/simulation", "/planner", "/evidence"} or path.endswith((".js", ".css", ".html")):
+        response.headers["Cache-Control"] = "no-store, max-age=0"
+    return response
 
 
 class RunRequest(BaseModel):
@@ -144,6 +164,25 @@ async def weather() -> dict:
     return frame.weather.model_dump(mode="json")
 
 
+@app.get("/api/weather/forecast")
+async def weather_forecast() -> dict:
+    return (await runtime.weather_forecast()).model_dump(mode="json")
+
+
+@app.get("/api/weather/tiles/{layer}/{z}/{x}/{y}.png")
+async def weather_tile(layer: str, z: int, x: int, y: int) -> Response:
+    if not settings.has_weather_credentials:
+        return Response(_transparent_weather_tile(), media_type="image/png", headers={"Cache-Control": "public, max-age=300"})
+    try:
+        content, content_type = await runtime.weather_map_tile(layer, z, x, y)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        LOGGER.warning("Weather map tile unavailable: %s", exc)
+        return Response(_transparent_weather_tile(), media_type="image/png", headers={"Cache-Control": "no-store"})
+    return Response(content, media_type=content_type, headers={"Cache-Control": "public, max-age=300"})
+
+
 @app.post("/api/weather/refresh")
 async def refresh_weather() -> dict:
     return (await runtime.manual_refresh_weather()).model_dump(mode="json")
@@ -225,7 +264,7 @@ async def methodology() -> dict[str, object]:
             "interpretation": "NDVI is a spectral greenness indicator; it is not a direct measurement of desertification or tree count.",
         },
         "weather": {
-            "source": "OpenWeather current weather API when configured",
+            "source": "OpenWeather current weather, five-day forecast and weather-map tiles when configured",
             "forcing": "Temperature, humidity, recent rain and wind are converted to bounded moisture and heat-stress signals.",
             "interpretation": "Weather forcing modifies the scenario incrementally; it does not substitute for soil moisture or field measurements.",
         },

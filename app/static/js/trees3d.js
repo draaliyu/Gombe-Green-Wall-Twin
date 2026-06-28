@@ -37,6 +37,9 @@ export class TreeLayer {
     this.version = -1;
     this.windSpeed = 0;
     this.windDirection = 0;
+    this.daylight = true;
+    this.cloudCover = 0;
+    this.temperature = 30;
     this.clock = new THREE.Clock();
     this.materials = [];
   }
@@ -47,10 +50,14 @@ export class TreeLayer {
     this.scene = new THREE.Scene();
     this.renderer = new THREE.WebGLRenderer({ canvas: map.getCanvas(), context: gl, antialias: true });
     this.renderer.autoClear = false;
-    this.scene.add(new THREE.HemisphereLight(0xcfffe8, 0x7a5b37, 1.75));
-    const sun = new THREE.DirectionalLight(0xfff2c6, 2.35);
-    sun.position.set(80, -120, 180);
-    this.scene.add(sun);
+    this.hemiLight = new THREE.HemisphereLight(0xcfffe8, 0x7a5b37, 1.75);
+    this.scene.add(this.hemiLight);
+    this.sunLight = new THREE.DirectionalLight(0xfff2c6, 2.35);
+    this.sunLight.position.set(80, -120, 180);
+    this.scene.add(this.sunLight);
+    const rim = new THREE.DirectionalLight(0x5fd9b0, 0.55);
+    rim.position.set(-90, 55, 120);
+    this.scene.add(rim);
     this.originMercator = maplibregl.MercatorCoordinate.fromLngLat(this.origin, 0);
     this.meterScale = this.originMercator.meterInMercatorCoordinateUnits();
     this.group = new THREE.Group();
@@ -68,6 +75,9 @@ export class TreeLayer {
   setWeather(weather) {
     this.windSpeed = Math.max(0, Number(weather?.wind_speed_mps) || 0);
     this.windDirection = (Number(weather?.wind_direction_deg) || 0) * Math.PI / 180;
+    this.daylight = weather?.is_daylight !== false;
+    this.cloudCover = Math.max(0, Math.min(100, Number(weather?.cloud_cover_percent) || 0));
+    this.temperature = Number(weather?.temperature_c) || 30;
   }
 
   setVisible(visible) {
@@ -93,6 +103,9 @@ export class TreeLayer {
     const branchGeometry = new THREE.CylinderGeometry(0.06, 0.12, 1.45, 5);
     branchGeometry.rotateZ(-0.55);
     branchGeometry.translate(0.55, 2.35, 0);
+    const branchOppositeGeometry = new THREE.CylinderGeometry(0.05, 0.11, 1.25, 5);
+    branchOppositeGeometry.rotateZ(0.62);
+    branchOppositeGeometry.translate(-0.46, 2.18, 0.16);
     const crownGeometry = new THREE.IcosahedronGeometry(1.0, 1);
     crownGeometry.scale(1.18, 0.92, 1.08);
     crownGeometry.translate(0, 3.35, 0);
@@ -102,15 +115,17 @@ export class TreeLayer {
 
     const trunkMaterial = enableSway(new THREE.MeshStandardMaterial({ color: 0x7b5133, roughness: 0.96 }), 0.22);
     const branchMaterial = enableSway(new THREE.MeshStandardMaterial({ color: 0x735038, roughness: 0.95 }), 0.42);
+    const branchOppositeMaterial = enableSway(new THREE.MeshStandardMaterial({ color: 0x6f4b31, roughness: 0.96 }), 0.46);
     const crownMaterial = enableSway(new THREE.MeshStandardMaterial({ color: 0x36b56e, roughness: 0.86, vertexColors: true }), 1.0);
     const crownSideMaterial = enableSway(new THREE.MeshStandardMaterial({ color: 0x4dc67b, roughness: 0.86, vertexColors: true }), 1.18);
-    this.materials = [trunkMaterial, branchMaterial, crownMaterial, crownSideMaterial];
+    this.materials = [trunkMaterial, branchMaterial, branchOppositeMaterial, crownMaterial, crownSideMaterial];
 
     const trunks = new THREE.InstancedMesh(trunkGeometry, trunkMaterial, count);
     const branches = new THREE.InstancedMesh(branchGeometry, branchMaterial, count);
+    const oppositeBranches = new THREE.InstancedMesh(branchOppositeGeometry, branchOppositeMaterial, count);
     const crowns = new THREE.InstancedMesh(crownGeometry, crownMaterial, count);
     const sideCrowns = new THREE.InstancedMesh(crownSideGeometry, crownSideMaterial, count);
-    [trunks, branches, crowns, sideCrowns].forEach((mesh) => { mesh.frustumCulled = false; });
+    [trunks, branches, oppositeBranches, crowns, sideCrowns].forEach((mesh) => { mesh.frustumCulled = false; });
 
     const matrix = new THREE.Matrix4();
     const position = new THREE.Vector3();
@@ -131,6 +146,7 @@ export class TreeLayer {
       matrix.compose(position, quaternion, scale);
       trunks.setMatrixAt(index, matrix);
       branches.setMatrixAt(index, matrix);
+      oppositeBranches.setMatrixAt(index, matrix);
       scale.set(crownScale * (0.72 + health * 0.55), heightScale * (0.82 + health * 0.35), crownScale * (0.72 + health * 0.55));
       matrix.compose(position, quaternion, scale);
       crowns.setMatrixAt(index, matrix);
@@ -140,15 +156,22 @@ export class TreeLayer {
       const sideColor = color.clone().offsetHSL(0.01, -0.04, 0.06);
       sideCrowns.setColorAt(index, sideColor);
     });
-    [trunks, branches, crowns, sideCrowns].forEach((mesh) => { mesh.instanceMatrix.needsUpdate = true; });
+    [trunks, branches, oppositeBranches, crowns, sideCrowns].forEach((mesh) => { mesh.instanceMatrix.needsUpdate = true; });
     if (crowns.instanceColor) crowns.instanceColor.needsUpdate = true;
     if (sideCrowns.instanceColor) sideCrowns.instanceColor.needsUpdate = true;
-    this.group.add(trunks, branches, crowns, sideCrowns);
+    this.group.add(trunks, branches, oppositeBranches, crowns, sideCrowns);
   }
 
   render(gl, args) {
     if (!this.group || !this.visible) return;
     const elapsed = this.clock.getElapsedTime();
+    if (this.sunLight && this.hemiLight) {
+      const cloudDim = 1 - this.cloudCover / 170;
+      this.sunLight.intensity = this.daylight ? 1.25 + cloudDim * 1.45 : 0.18;
+      this.sunLight.color.set(this.daylight ? 0xffefbf : 0x92b7ff);
+      this.hemiLight.intensity = this.daylight ? 1.15 + cloudDim * 0.75 : 0.52;
+      this.hemiLight.color.set(this.daylight ? 0xd7fff0 : 0x8eace8);
+    }
     const strength = Math.min(0.48, 0.035 + this.windSpeed * 0.025);
     const dirX = Math.sin(this.windDirection);
     const dirY = Math.cos(this.windDirection);

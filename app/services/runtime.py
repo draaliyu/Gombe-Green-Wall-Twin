@@ -11,7 +11,7 @@ import httpx
 import numpy as np
 
 from app.config import Settings
-from app.models import GFWSnapshot, ScenarioParameters, SimulationSnapshot, TwinFrame, WeatherSnapshot
+from app.models import (GFWSnapshot, ScenarioParameters, SimulationSnapshot, TwinFrame, WeatherForecastSnapshot, WeatherSnapshot)
 from app.services.boundary import (
     bbox_polygon,
     fetch_gombe_boundaries,
@@ -39,7 +39,7 @@ class TwinRuntime:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.client = httpx.AsyncClient(
-            headers={"User-Agent": "Gombe-Green-Wall-Twin/2.0"},
+            headers={"User-Agent": "Gombe-Green-Wall-Twin/3.0"},
             follow_redirects=True,
         )
         self.sentinel = SentinelNDVIService(settings, self.client)
@@ -53,6 +53,7 @@ class TwinRuntime:
         self.satellite_data: SatelliteData | None = None
         self.gfw_data: GFWSnapshot | None = None
         self.weather_data: WeatherSnapshot | None = None
+        self.weather_forecast_data: WeatherForecastSnapshot | None = None
         self.sequence = 0
         self._tasks: list[asyncio.Task[Any]] = []
         self._lock = asyncio.Lock()
@@ -73,6 +74,7 @@ class TwinRuntime:
         north_bounds = collection_bounds(self.northern)
         north_center = ((north_bounds[0] + north_bounds[2]) / 2, (north_bounds[1] + north_bounds[3]) / 2)
         self.weather_data = await self.weather_service.fetch(*north_center, "Northern Gombe")
+        self.weather_forecast_data = await self.weather_service.fetch_forecast(*north_center, "Northern Gombe")
         self._apply_weather_forcing(self.weather_data)
         self._load_history()
         await self._record_history(force=True)
@@ -140,10 +142,12 @@ class TwinRuntime:
             bounds = collection_bounds(self.northern)
             center = ((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
             refreshed = await self.weather_service.fetch(*center, "Northern Gombe")
+            forecast = await self.weather_service.fetch_forecast(*center, "Northern Gombe")
             async with self._lock:
                 self.weather_data = refreshed
+                self.weather_forecast_data = forecast
                 self._apply_weather_forcing(refreshed)
-            LOGGER.info("Refreshed weather forcing")
+            LOGGER.info("Refreshed weather forcing and forecast")
 
     async def _broadcast_loop(self) -> None:
         while True:
@@ -167,7 +171,7 @@ class TwinRuntime:
 
     async def frame(self) -> TwinFrame:
         async with self._lock:
-            if self.satellite_data is None or self.gfw_data is None or self.weather_data is None:
+            if self.satellite_data is None or self.gfw_data is None or self.weather_data is None or self.weather_forecast_data is None:
                 raise RuntimeError("Twin runtime has not started")
             self.sequence += 1
             metrics = self.automaton.metrics()
@@ -193,6 +197,7 @@ class TwinRuntime:
                 satellite=self.satellite_data.snapshot,
                 gfw=self.gfw_data,
                 weather=self.weather_data,
+                weather_forecast=self.weather_forecast_data,
                 simulation=simulation,
                 insights=build_insights(
                     self.satellite_data.snapshot,
@@ -302,10 +307,22 @@ class TwinRuntime:
         bounds = collection_bounds(self.northern)
         center = ((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
         refreshed = await self.weather_service.fetch(*center, "Northern Gombe")
+        forecast = await self.weather_service.fetch_forecast(*center, "Northern Gombe")
         async with self._lock:
             self.weather_data = refreshed
+            self.weather_forecast_data = forecast
             self._apply_weather_forcing(refreshed)
         return refreshed
+
+
+    async def weather_forecast(self) -> WeatherForecastSnapshot:
+        async with self._lock:
+            if self.weather_forecast_data is None:
+                raise RuntimeError("Weather forecast unavailable")
+            return self.weather_forecast_data
+
+    async def weather_map_tile(self, layer: str, z: int, x: int, y: int) -> tuple[bytes, str]:
+        return await self.weather_service.fetch_map_tile(layer, z, x, y)
 
     async def subscribe(self) -> asyncio.Queue[dict[str, Any]]:
         queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue(maxsize=2)

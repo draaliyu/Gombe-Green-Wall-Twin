@@ -3,148 +3,177 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Gombe Desertification & Afforestation Digital Twin</title>
-  <meta name="description" content="A live Gombe State environmental twin combining Sentinel-2 NDVI, current weather, Global Forest Watch context, dynamic trees and Great Green Wall scenario modelling.">
+  <title>Gombe Desertification & Afforestation Twin</title>
+  <meta name="description" content="A live Earth-intelligence command centre for vegetation, weather, desertification pressure and Great Green Wall restoration scenarios across Gombe State.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Gombe Desertification & Afforestation Digital Twin">
-  <meta property="og:description" content="Explore full Gombe State, northern LGAs, satellite vegetation, live weather and Great Green Wall scenarios.">
-  <meta property="og:image" content="/static/social-preview.jpg">
+  <meta property="og:title" content="Gombe Desertification & Afforestation Twin">
+  <meta property="og:description" content="Explore Gombe State terrain, Sentinel-2 NDVI, live weather, moving trees and transparent restoration scenarios.">
+  <meta property="og:image" content="/static/social-preview.jpg?v=3.0.0">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=3.0.0">
+  <link rel="preconnect" href="https://unpkg.com">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
-  <link rel="stylesheet" href="/static/css/styles.css?v=2.0.0">
+  <link rel="stylesheet" href="/static/css/styles.css?v=3.0.0">
   <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 </head>
-<body>
-<header class="app-header">
-  <a class="brand" href="/">
-    <span class="brand-mark" aria-hidden="true"></span>
-    <span><span class="eyebrow">Great Green Wall Environmental Intelligence</span><h1>Gombe Desertification & Afforestation Digital Twin</h1></span>
+<body class="command-body">
+<header class="command-header">
+  <a class="command-brand" href="/" aria-label="Gombe Green Wall Twin home">
+    <span class="brand-tree" aria-hidden="true">♧</span>
+    <span><strong>GOMBE DESERTIFICATION & AFFORESTATION TWIN</strong><small>Great Green Wall • Live Earth Intelligence Platform</small></span>
   </a>
-  <nav class="nav" aria-label="Primary services">
-    <a href="/" data-nav="twin">Live Twin</a>
-    <a href="/areas" data-nav="areas">LGA Explorer</a>
-    <a href="/weather" data-nav="weather">Weather & Sky</a>
-    <a href="/satellite" data-nav="satellite">Satellite NDVI</a>
-    <a href="/simulation" data-nav="simulation">Simulation Lab</a>
-    <a href="/planner" data-nav="planner">Green Wall Planner</a>
-    <a href="/evidence" data-nav="evidence">Evidence</a>
+  <nav class="command-nav" aria-label="Primary services">
+    <a href="/" data-nav="twin" class="active"><span>▦</span>Live Twin</a>
+    <a href="/areas" data-nav="areas"><span>▧</span>Areas</a>
+    <a href="/weather" data-nav="weather"><span>☀</span>Weather</a>
+    <a href="/satellite" data-nav="satellite"><span>⌘</span>Satellite</a>
+    <a href="/simulation" data-nav="simulation"><span>◉</span>Simulation</a>
+    <a href="/planner" data-nav="planner"><span>♧</span>Planner</a>
+    <a href="/evidence" data-nav="evidence"><span>☑</span>Evidence</a>
   </nav>
-  <div class="header-status">
-    <span class="status-pill"><span class="status-dot" data-connection-dot></span><span data-connection-text>Connecting</span></span>
-    <span class="status-pill">Frame <strong id="header-frame">000000</strong></span>
+  <div class="command-status">
+    <button class="header-icon" id="economy-toggle" title="Toggle economy rendering" aria-label="Toggle economy rendering">⚙</button>
+    <span class="live-indicator"><i data-connection-dot></i><b data-connection-text>CONNECTING</b></span>
+    <time id="command-clock">--:--:--</time><small>WAT</small>
   </div>
 </header>
 
-<main class="page">
-  <section class="hero-copy">
-    <div>
-      <span class="eyebrow">Full state context • northern Gombe focus • live environmental forcing</span>
-      <h2>See where vegetation is changing, how weather influences the scenario, and how tree barriers could respond.</h2>
-      <p>The state boundary and all eleven LGAs remain visible. Sentinel-2 NDVI and the cellular model are clipped to the five northern-focus LGAs: Dukku, Funakaye, Gombe, Kwami and Nafada.</p>
-    </div>
-    <span class="live-time" id="last-updated">Connecting to the live twin…</span>
-  </section>
+<main class="command-grid">
+  <aside class="left-rail">
+    <section class="command-panel weather-now-panel">
+      <header><h2>Weather now</h2><span id="weather-mode" class="micro-badge">—</span></header>
+      <div class="weather-now-main">
+        <span class="weather-symbol" id="weather-symbol" aria-hidden="true">☀</span>
+        <div><strong id="weather-temp">—</strong><small id="weather-feels">Feels like —</small><p id="weather-condition">Connecting…</p></div>
+      </div>
+      <div class="micro-grid three">
+        <div><small>Humidity</small><b id="weather-humidity">—</b></div>
+        <div><small>Wind</small><b id="weather-wind">—</b></div>
+        <div><small>Pressure</small><b id="weather-pressure">—</b></div>
+        <div><small>Visibility</small><b id="weather-visibility">—</b></div>
+        <div><small>Clouds</small><b id="weather-clouds">—</b></div>
+        <div><small>Rain</small><b id="weather-rain">—</b></div>
+      </div>
+      <a class="panel-action" href="/weather">Detailed weather service</a>
+    </section>
 
-  <section class="twin-layout">
-    <div class="map-shell" id="twin-map-shell">
-      <div class="map" id="twin-map" aria-label="3D map of Gombe State and northern Gombe"></div>
-      <div class="map-title">
-        <span class="eyebrow">Gombe State → Northern Gombe focus</span>
-        <strong id="map-scene-title">Live land, weather and restoration scene</strong>
-        <span id="map-scene-subtitle">Connecting to satellite, weather and model services…</span>
+    <section class="command-panel sky-view-panel">
+      <header><h2>Sky view</h2><span id="sky-mode-label">LIVE</span></header>
+      <div class="sky-dome-wrap"><canvas id="sky-dome" aria-label="Current sky dome visualisation"></canvas><span class="sky-north">N</span><span class="sky-east">E</span><span class="sky-south">S</span><span class="sky-west">W</span></div>
+      <p class="source-note" id="sky-source-note">Sun, moon, stars, clouds and rain are driven by the current weather frame.</p>
+    </section>
+
+    <section class="command-panel environment-panel">
+      <header><h2>Environment status</h2><span>LIVE</span></header>
+      <div class="status-list">
+        <div><span>Vegetation health</span><b id="status-vegetation">—</b></div>
+        <div><span>Atmospheric moisture</span><b id="status-moisture">—</b></div>
+        <div><span>Desertification pressure</span><b id="status-desert">—</b></div>
+        <div><span>Heat stress</span><b id="status-heat">—</b></div>
+        <div><span>Wind erosion signal</span><b id="status-wind">—</b></div>
+        <div><span>Forest-loss context</span><b id="status-forest">—</b></div>
       </div>
-      <div class="metric-strip">
-        <div class="metric-tile"><small>Mean NDVI</small><b class="green" id="map-ndvi">—</b></div>
-        <div class="metric-tile"><small>High desert pressure</small><b class="sand" id="map-desert">—</b></div>
-        <div class="metric-tile"><small>Tree health</small><b class="green" id="map-tree-health">—</b></div>
+    </section>
+
+    <section class="command-panel ndvi-panel">
+      <header><h2>Live NDVI</h2><span id="sentinel-mode" class="micro-badge">—</span></header>
+      <div class="ndvi-summary"><strong id="ndvi-mean">—</strong><span id="ndvi-class">Waiting for satellite data</span></div>
+      <canvas id="ndvi-sparkline" class="mini-chart" aria-label="NDVI and model trajectory"></canvas>
+      <div class="micro-grid three"><div><small>Minimum</small><b id="ndvi-min">—</b></div><div><small>Maximum</small><b id="ndvi-max">—</b></div><div><small>Median</small><b id="ndvi-median">—</b></div></div>
+      <div class="ndvi-scale" aria-label="NDVI scale"><span></span></div>
+    </section>
+  </aside>
+
+  <section class="centre-column">
+    <section class="summary-strip" aria-label="Current environmental summary">
+      <div><small>Vegetation cover</small><strong id="summary-vegetation">—</strong><em id="summary-vegetation-trend">Model state</em></div>
+      <div><small>Desertification risk</small><strong id="summary-desert">—</strong><em id="summary-desert-trend">Scenario pressure</em></div>
+      <div><small>Barrier footprint</small><strong id="summary-barrier">—</strong><em>Committed model cells</em></div>
+      <div><small>Trees rendered</small><strong id="summary-trees">—</strong><em id="summary-tree-note">Procedural model instances</em></div>
+      <div><small>GFW loss context</small><strong id="summary-loss">—</strong><em id="summary-loss-year">Latest available year</em></div>
+      <div><small>Moisture forcing</small><strong id="summary-moisture">—</strong><em>Weather-derived model input</em></div>
+    </section>
+
+    <section class="immersive-stage" id="twin-map-shell">
+      <div class="map" id="twin-map" aria-label="Immersive 3D Gombe State environmental twin"></div>
+      <div class="ground-sky-split" id="ground-sky-split" aria-hidden="true"><canvas id="panorama-sky"></canvas><div class="horizon-label">GROUND + SKY IMMERSIVE VIEW</div></div>
+      <div class="scene-vignette"></div>
+      <div class="scene-title"><span id="scene-mode">AUTO ORBIT • CLOUD FOLLOW</span><strong id="scene-title">Gombe State live environmental scene</strong><small id="scene-subtitle">Connecting to satellite, weather and model services…</small></div>
+      <div class="compass" id="scene-compass"><span>N</span><i></i><small id="compass-bearing">000°</small></div>
+      <div class="layer-rail" aria-label="Environmental layers">
+        <button id="layer-day" class="active" title="Day/night sky">☀</button>
+        <button id="layer-clouds" class="active" title="Provider cloud map">☁</button>
+        <button id="layer-rain" class="active" title="Provider precipitation map">☂</button>
+        <button id="layer-wind" class="active" title="Wind flow">≋</button>
+        <button id="layer-temp" title="Provider temperature map">♨</button>
+        <button id="layer-risk" class="active" title="Desert risk overlay">◒</button>
       </div>
-      <div class="map-legend" aria-label="Map legend">
-        <h3>Live scene legend</h3>
-        <div class="legend-row"><span class="legend-swatch state"></span>Gombe State boundary</div>
-        <div class="legend-row"><span class="legend-swatch north"></span>Northern-focus LGAs</div>
-        <div class="legend-row"><span class="legend-swatch sand"></span>Lower NDVI / dry surface</div>
-        <div class="legend-row"><span class="legend-swatch grass"></span>Higher NDVI / vegetation</div>
-        <div class="legend-row"><span class="legend-swatch wall"></span>Committed tree barrier</div>
-        <div class="legend-row"><span class="legend-swatch wind"></span>Current wind movement</div>
+      <div class="map-view-controls" aria-label="Map view controls">
+        <button id="view-state">▱ <span>State</span></button>
+        <button id="view-north">⌖ <span>North</span></button>
+        <button id="view-globe">◉ <span>3D globe</span></button>
+        <button id="toggle-terrain" class="active">△ <span>Terrain</span></button>
+        <button id="toggle-orbit" class="active">↻ <span>Orbit</span></button>
+        <button id="first-person">♙ <span>First person</span></button>
+        <button id="split-view">▣ <span>Split view</span></button>
+        <button id="reset-view">⟳ <span>Reset</span></button>
+        <button id="fullscreen-map">⛶ <span>Full</span></button>
       </div>
-      <div class="map-controls" aria-label="Map and simulation controls">
-        <button class="control-btn" id="view-state"><span class="icon">▱</span>State</button>
-        <button class="control-btn active" id="view-north"><span class="icon">⌖</span>North</button>
-        <button class="control-btn active" id="view-ndvi"><span class="icon">◉</span>NDVI</button>
-        <button class="control-btn sand active" id="view-risk"><span class="icon">≈</span>Risk</button>
-        <button class="control-btn active" id="toggle-trees"><span class="icon">♣</span>Trees</button>
-        <button class="control-btn active" id="toggle-weather"><span class="icon">☁</span>Sky</button>
-        <button class="control-btn" id="toggle-run"><span class="icon" id="run-icon">Ⅱ</span><span id="run-label">Pause</span></button>
-        <button class="control-btn" id="toggle-orbit"><span class="icon">↻</span>Orbit</button>
-        <button class="control-btn" id="fullscreen-map"><span class="icon">⛶</span>Full</button>
+      <div class="playback-controls">
+        <button id="toggle-run" aria-label="Pause or run simulation"><span id="run-icon">Ⅱ</span></button>
+        <button id="orbit-skip" aria-label="Advance orbit target">≫</button>
+        <span class="auto-orbit-status"><i></i><b id="orbit-status">AUTO ORBIT ACTIVE</b></span>
+        <label>Orbit speed <input id="orbit-speed" type="range" min="0.15" max="1.8" value="0.65" step="0.05"></label>
+        <label>Simulation <input id="sim-speed" type="range" min="0.25" max="5" value="1" step="0.25"><output id="sim-speed-output">1.0×</output></label>
+      </div>
+      <div class="map-legend compact-legend">
+        <span><i class="legend-state"></i>State</span><span><i class="legend-north"></i>Northern focus</span><span><i class="legend-ndvi"></i>NDVI</span><span><i class="legend-risk"></i>Desert pressure</span><span><i class="legend-tree"></i>Model trees</span>
       </div>
       <aside class="area-drawer" id="area-drawer" aria-live="polite">
         <button class="drawer-close" id="close-area" aria-label="Close LGA details">×</button>
         <span class="eyebrow" id="area-scope">Select an LGA</span>
         <h3 id="area-name">LGA evidence</h3>
-        <div class="drawer-grid">
-          <div><small>Mean NDVI</small><strong id="area-ndvi">—</strong></div>
-          <div><small>Very sparse pixels</small><strong id="area-bare">—</strong></div>
-          <div><small>Modelled high desert</small><strong id="area-desert">—</strong></div>
-          <div><small>Tree barrier</small><strong id="area-barrier">—</strong></div>
-        </div>
-        <p class="drawer-weather" id="area-weather">Tap an LGA to load current evidence.</p>
-        <div class="drawer-insights" id="area-interpretations"></div>
+        <div class="drawer-grid"><div><small>Mean NDVI</small><strong id="area-ndvi">—</strong></div><div><small>Very sparse pixels</small><strong id="area-bare">—</strong></div><div><small>High desert pressure</small><strong id="area-desert">—</strong></div><div><small>Tree barrier</small><strong id="area-barrier">—</strong></div></div>
+        <p class="drawer-weather" id="area-weather">Tap an LGA to load evidence.</p><div class="drawer-insights" id="area-interpretations"></div>
       </aside>
-    </div>
+    </section>
+  </section>
 
-    <aside class="side-stack">
-      <section class="panel">
-        <div class="panel-head"><h3>Current weather & sky</h3><span class="source-tag" id="weather-mode">—</span></div>
-        <div class="panel-body">
-          <div class="weather-hero"><span class="weather-orb" aria-hidden="true"></span><div><strong id="weather-temp">—</strong><span id="weather-condition">Current condition</span></div></div>
-          <div class="kpi-grid compact">
-            <div class="kpi"><small>Humidity</small><strong id="weather-humidity">—</strong></div>
-            <div class="kpi"><small>Wind</small><strong id="weather-wind">—</strong></div>
-            <div class="kpi"><small>Rain, 1 hour</small><strong id="weather-rain">—</strong></div>
-            <div class="kpi"><small>Sky cycle</small><strong id="weather-sky">—</strong></div>
-          </div>
-          <div class="meter"><div class="meter-top"><span>Weather moisture forcing</span></div><div class="meter-track"><div class="meter-fill blue" id="weather-moisture"></div></div></div>
-          <div class="meter"><div class="meter-top"><span>Weather heat stress</span></div><div class="meter-track"><div class="meter-fill sand" id="weather-heat"></div></div></div>
-          <a class="inline-link" href="/weather">Open the animated Weather & Sky service →</a>
-        </div>
-      </section>
+  <aside class="right-rail">
+    <section class="command-panel flow-panel">
+      <header><h2>Live weather flow</h2><span id="flow-mode">MODELLED FLOW</span></header>
+      <canvas id="weather-flow-canvas" class="flow-canvas" aria-label="Cloud rain and wind flow visualisation"></canvas>
+      <div class="flow-timeline"><button id="flow-pause">Ⅱ</button><span id="flow-time-start">Now</span><div><i id="flow-progress"></i></div><span id="flow-time-end">+24h</span></div>
+      <p class="source-note">Provider forecast and current observations; this is not Doppler radar.</p>
+    </section>
 
-      <section class="panel">
-        <div class="panel-head"><h3>Vegetation condition</h3><span class="source-tag" id="sentinel-mode">—</span></div>
-        <div class="panel-body">
-          <div class="kpi-grid">
-            <div class="kpi"><small>Mean NDVI</small><strong id="ndvi-mean">—</strong><em id="ndvi-window">Observation window</em></div>
-            <div class="kpi"><small>Valid coverage</small><strong id="ndvi-valid">—</strong><em>Cloud-masked pixels</em></div>
-            <div class="kpi"><small>Very sparse</small><strong id="ndvi-bare">—</strong><em>NDVI &lt; 0.15</em></div>
-            <div class="kpi"><small>Dense green</small><strong id="ndvi-dense">—</strong><em>NDVI ≥ 0.50</em></div>
-          </div>
-          <div class="meter"><div class="meter-top"><span>Greenness profile</span><b id="green-meter-label">—</b></div><div class="meter-track"><div class="meter-fill" id="green-meter"></div></div></div>
-        </div>
-      </section>
+    <section class="command-panel forecast-panel">
+      <header><h2>Forecast trend</h2><span id="forecast-mode">—</span></header>
+      <canvas id="forecast-chart" class="chart-medium" aria-label="Forecast temperature and humidity"></canvas>
+      <div class="chart-legend"><span class="temp-line">Temperature</span><span class="humidity-line">Humidity</span></div>
+    </section>
 
-      <section class="panel">
-        <div class="panel-head"><h3>Scenario state</h3><span class="source-tag">Model</span></div>
-        <div class="panel-body">
-          <div class="kpi-grid">
-            <div class="kpi"><small>Vegetated</small><strong id="sim-vegetated">—</strong><em>Model cells</em></div>
-            <div class="kpi"><small>High desert</small><strong id="sim-desert">—</strong><em>Model cells</em></div>
-            <div class="kpi"><small>Barrier cover</small><strong id="sim-barrier">—</strong><em>Committed scenario</em></div>
-            <div class="kpi"><small>Front cells</small><strong id="sim-front">—</strong><em>Transition zone</em></div>
-          </div>
-          <div class="meter"><div class="meter-top"><span>Desert pressure</span><b id="desert-meter-label">—</b></div><div class="meter-track"><div class="meter-fill sand" id="desert-meter"></div></div></div>
-        </div>
-      </section>
+    <section class="command-panel wind-panel">
+      <header><h2>Wind flow</h2><span id="wind-direction-label">—</span></header>
+      <canvas id="wind-flow-canvas" class="chart-medium" aria-label="Animated wind streamlines"></canvas>
+      <p><b id="wind-speed-label">—</b> surface wind • direction from provider observation.</p>
+    </section>
 
-      <section class="panel">
-        <div class="panel-head"><h3>Evidence-based interpretation</h3><span class="source-tag" id="gfw-mode">—</span></div>
-        <div class="panel-body"><div class="insight-list" id="insight-list"><p>Waiting for the first evidence frame…</p></div></div>
-      </section>
-    </aside>
+    <section class="command-panel events-panel">
+      <header><h2>Events & advisories</h2><span id="event-count">0</span></header>
+      <div id="event-list" class="event-list"><p>Waiting for live evidence…</p></div>
+    </section>
+  </aside>
+
+  <section class="bottom-analytics">
+    <article class="command-panel"><header><h2>Forecast rainfall</h2><span>Next 72 hours</span></header><canvas id="rain-chart" class="bottom-chart" aria-label="Forecast rainfall chart"></canvas></article>
+    <article class="command-panel"><header><h2>Forest-change context</h2><span id="gfw-mode" class="micro-badge">—</span></header><canvas id="forest-chart" class="bottom-chart" aria-label="Global Forest Watch annual loss context"></canvas></article>
+    <article class="command-panel green-health-panel"><header><h2>Green Wall health</h2><span>Model</span></header><div class="donut-wrap"><canvas id="health-donut"></canvas><div><strong id="health-value">—</strong><small>Mean tree health</small></div></div><ul><li><i class="healthy"></i>Healthy model cells</li><li><i class="stressed"></i>Stressed vegetation</li><li><i class="poor"></i>High desert pressure</li></ul></article>
+    <article class="command-panel trajectory-panel"><header><h2>Live model trajectory</h2><span id="trajectory-count">0 samples</span></header><canvas id="trajectory-chart" class="bottom-chart" aria-label="Live vegetation and desert pressure trajectory"></canvas></article>
   </section>
 </main>
-<footer class="footer">Satellite greenness, current weather and forest-change data are observations or external evidence. Desert pressure, tree growth and restoration barriers are transparent scenario-model outputs and require local field calibration before operational use.</footer>
-<script type="module" src="/static/js/twin.js?v=2.0.0"></script>
+
+<footer class="command-footer"><span id="footer-coordinates">Gombe State • Northern focus</span><span>Sentinel-2 NDVI • OpenWeather • Global Forest Watch • Transparent cellular simulation</span><span id="last-updated">Connecting…</span></footer>
+<script type="module" src="/static/js/twin.js?v=3.0.0"></script>
 </body>
 </html>
